@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "276929703073",
+    "project_id": "capstone-project-wehire",
+    "storage_bucket": "capstone-project-wehire.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:276929703073:android:0656b8d3ff3475c3de54e0",
+        "android_client_info": {
+          "package_name": "com.example.we_hire"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "276929703073-9tfa7t5ahdbr7rilrbsu1r2ki0spenq2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDVyCq0KSzKR_cDOAxQQfXRN6X8ZRb4Mr8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "276929703073-9tfa7t5ahdbr7rilrbsu1r2ki0spenq2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

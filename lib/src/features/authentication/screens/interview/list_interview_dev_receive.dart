@@ -1,0 +1,248 @@
+import 'package:flutter/material.dart';
+import 'package:we_hire/src/common_widget/interview_page.dart';
+import 'package:we_hire/src/constants/colors.dart';
+import 'package:we_hire/src/features/authentication/controllers/interview_controller.dart';
+import 'package:we_hire/src/features/authentication/models/interview.dart';
+import 'package:we_hire/src/features/authentication/repository/request_repository.dart';
+import 'package:we_hire/src/features/authentication/screens/welcome/main_page.dart';
+
+class ListInterviewDevReceive extends StatefulWidget {
+  const ListInterviewDevReceive({super.key});
+
+  @override
+  _ListInterviewDevReceiveState createState() =>
+      _ListInterviewDevReceiveState();
+  static const String routeName = "/status/interview";
+}
+
+class _ListInterviewDevReceiveState extends State<ListInterviewDevReceive> {
+  var hiringController = InterviewController(RequestRepository());
+  String searchQuery = '';
+
+  final List<String> categories = [
+    'Waiting Approval',
+    'Approved',
+    'Rejected',
+    'Completed'
+  ];
+  List<String> selectedCategories = ['Waiting Approval'];
+  List<String> displayCategories =
+      []; // Separate variable for displaying categories
+
+  @override
+  void initState() {
+    super.initState();
+    _refreshData();
+  }
+
+  Future<void> _refreshData() async {
+    await hiringController.fetchInterviewList(null);
+    setState(() {
+      displayCategories = List.from(categories);
+    });
+  }
+
+  Future<void> _searchInterviews() async {
+    List<Interview> searchedInterviews =
+        await hiringController.searchInterviewList(
+      null,
+      searchQuery,
+    );
+
+    setState(() {
+      displayCategories = searchedInterviews
+          .map(
+              (interview) => interview.statusString ?? '') // handle null values
+          .toSet()
+          .toList();
+      //    displayCategories = List.from(categories);
+    });
+  }
+
+  Widget build(BuildContext context) {
+    return buildViewPage();
+  }
+
+  Widget buildViewPage() {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: tHeader,
+        title: const Text('Interview'),
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_outlined),
+          color: Colors.white,
+          onPressed: () {
+            Navigator.pushReplacementNamed(context, MainHomePage.routeName);
+          },
+        ),
+      ),
+      body: Stack(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                flex: 2,
+                child: Container(),
+              ),
+              Expanded(
+                flex: 1,
+                child: Container(
+                  color: greenshede1.withOpacity(0.1),
+                ),
+              ),
+            ],
+          ),
+          SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  Container(
+                    width: MediaQuery.of(context).size.width * 1,
+                    height: 50,
+                    child: TextField(
+                      onChanged: (value) {
+                        setState(() {
+                          searchQuery = value.toLowerCase();
+                        });
+                        _searchInterviews();
+                      },
+                      decoration: InputDecoration(
+                        labelText: 'Search',
+                        labelStyle: const TextStyle(
+                          color: tBottomNavigation, // Set the label text color
+                        ),
+                        focusedBorder: const OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                        prefixIcon: const Icon(
+                          Icons.search,
+                          color: tBottomNavigation,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  buildStaticYardList(),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildStaticYardList() {
+    return FutureBuilder<List<Interview>>(
+      future: hiringController.fetchInterviewList(null),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
+        if (snapshot.hasError) {
+          return Center(
+            child: Text('Error: ${snapshot.error}'),
+          );
+        }
+
+        List<Interview> filteredInterviews = snapshot.data?.where((interview) {
+              return selectedCategories.contains(interview.statusString);
+            }).toList() ??
+            [];
+
+        return Column(
+          children: [
+            SizedBox(
+              height: 40,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: displayCategories
+                    .map((category) => Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                        child: FilterChip(
+                          label: Text(
+                            category,
+                            style: TextStyle(
+                              color: selectedCategories.contains(category)
+                                  ? Colors.white
+                                  : Colors.white,
+                            ),
+                          ),
+                          selected: selectedCategories.contains(category),
+                          onSelected: (selected) {
+                            setState(() {
+                              if (selected) {
+                                selectedCategories.add(category);
+                              } else {
+                                selectedCategories.remove(category);
+                              }
+                            });
+                          },
+                          backgroundColor: selectedCategories.contains(category)
+                              ? Colors.blue
+                              : tBottomNavigation,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                            side: BorderSide(
+                              color: selectedCategories.contains(category)
+                                  ? Colors.grey
+                                  : tBottomNavigation,
+                            ),
+                          ),
+                        )))
+                    .toList(),
+              ),
+            ),
+            SizedBox(
+                height: 600,
+                child: filteredInterviews.length > 0
+                    ? ListView.builder(
+                        scrollDirection: Axis.vertical,
+                        physics: const BouncingScrollPhysics(),
+                        itemCount: filteredInterviews.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          Interview interview = filteredInterviews[index];
+
+                          bool matchesSearch = interview.title!
+                              .toLowerCase()
+                              .contains(searchQuery);
+
+                          if (matchesSearch || searchQuery.isEmpty) {
+                            return InterviewPageCard(
+                              interview: interview,
+                            );
+                          } else {
+                            return Container();
+                          }
+                        },
+                      )
+                    : Center(
+                        child: ClipOval(
+                          child: Image.asset(
+                            'assets/images/splash_images/interview.png',
+                            height: 300,
+                            width: 300,
+                          ),
+                        ),
+                      )),
+          ],
+        );
+      },
+    );
+  }
+}
