@@ -441,7 +441,7 @@ class _InterviewPageDetailState extends State<InterviewPageDetail> {
                               builder: (BuildContext context) {
                                 return AlertDialog(
                                   title: const Text(
-                                    'Do you want ensure approved   this request?',
+                                    'Do you want ensure approved this request?',
                                     style: TextStyle(color: tBottomNavigation),
                                   ),
                                   contentPadding:
@@ -480,7 +480,8 @@ class _InterviewPageDetailState extends State<InterviewPageDetail> {
 
                                           Navigator.of(context).pop();
                                           Fluttertoast.showToast(
-                                            msg: "Approved Successfully.",
+                                            msg:
+                                                "Approved Interview Successfully.",
                                             toastLength: Toast.LENGTH_SHORT,
                                             gravity: ToastGravity.BOTTOM,
                                             timeInSecForIosWeb: 1,
@@ -586,7 +587,8 @@ class _InterviewPageDetailState extends State<InterviewPageDetail> {
                                             interviewList!.interviewId, reason);
                                         Navigator.of(context).pop();
                                         Fluttertoast.showToast(
-                                          msg: "Rejected Succesfully.",
+                                          msg:
+                                              "Rejected Interview Succesfully.",
                                           toastLength: Toast.LENGTH_SHORT,
                                           gravity: ToastGravity.BOTTOM,
                                           timeInSecForIosWeb: 1,

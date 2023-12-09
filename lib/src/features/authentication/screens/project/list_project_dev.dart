@@ -157,8 +157,11 @@ class _ListProjectDevState extends State<ListProjectDev> {
           );
         }
 
-        List<Project> projectsToDisplay =
-            searchQuery.isEmpty ? snapshot.data ?? [] : snapshot.data ?? [];
+        List<Project>? filteredList = snapshot.data
+            ?.where((project) =>
+                project.projectName!.toLowerCase().contains(searchQuery) ||
+                project.projectCode!.toLowerCase().contains(searchQuery))
+            .toList();
 
         return Column(
           children: [
@@ -167,9 +170,23 @@ class _ListProjectDevState extends State<ListProjectDev> {
               child: ListView.builder(
                 scrollDirection: Axis.vertical,
                 physics: const BouncingScrollPhysics(),
-                itemCount: projectsToDisplay.length,
+                itemCount: snapshot.data?.length ?? 0,
                 itemBuilder: (BuildContext context, int index) {
-                  return ProjectCard(project: projectsToDisplay[index]);
+                  // Check if the index is within the valid range
+                  if (index >= 0 && index < filteredList!.length) {
+                    return ProjectCard(project: filteredList[index]);
+                  } else {
+                    // Handle the case where the index is out of bounds
+                    return Center(
+                      child: ClipOval(
+                        child: Image.asset(
+                          'assets/images/splash_images/interview.png',
+                          height: 300,
+                          width: 300,
+                        ),
+                      ),
+                    );
+                  }
                 },
               ),
             ),

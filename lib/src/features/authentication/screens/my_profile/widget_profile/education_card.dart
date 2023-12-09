@@ -120,7 +120,7 @@ class _EducationCardState extends State<EducationCard>
                           builder: (BuildContext context) {
                             return AlertDialog(
                               content: const Text(
-                                  "Are you sure you want to delete this?"),
+                                  "Are you sure you want to delete this education?"),
                               actions: [
                                 TextButton(
                                   onPressed: () {

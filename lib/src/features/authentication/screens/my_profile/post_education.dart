@@ -368,7 +368,7 @@ class _PostEducationPageState extends State<PostEducationPage> {
 
                   if (success) {
                     Fluttertoast.showToast(
-                      msg: "Education Posted Successfully.",
+                      msg: "Education Created Successfully.",
                       toastLength: Toast.LENGTH_SHORT,
                       gravity: ToastGravity.BOTTOM,
                       timeInSecForIosWeb: 1,
@@ -395,7 +395,7 @@ class _PostEducationPageState extends State<PostEducationPage> {
                 } catch (e) {
                   Fluttertoast.showToast(
                     // msg: "An error occurred: $e",
-                    msg: "Failed to post education.",
+                    msg: "Failed to created education.",
                     toastLength: Toast.LENGTH_SHORT,
                     gravity: ToastGravity.BOTTOM,
                     timeInSecForIosWeb: 1,
