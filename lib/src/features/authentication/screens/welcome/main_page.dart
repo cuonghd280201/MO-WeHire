@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:we_hire/src/features/authentication/controllers/developer_controller.dart';
+import 'package:we_hire/src/features/authentication/models/notification.dart';
 import 'package:we_hire/src/features/authentication/repository/request_repository.dart';
 
 import 'package:we_hire/src/features/authentication/screens/my_profile/setting_dev.dart';
@@ -11,9 +12,11 @@ import 'package:badges/badges.dart' as badges;
 import '../../../../common_widget/from_home_widget/form_category_widget.dart';
 
 class MainHomePage extends StatefulWidget {
+  final NotificationDev? notificationDev;
+
   static const String routeName = "/home";
 
-  const MainHomePage({super.key});
+  const MainHomePage({super.key, this.notificationDev});
 
   @override
   _MainHomePageState createState() => _MainHomePageState();
@@ -29,8 +32,10 @@ class _MainHomePageState extends State<MainHomePage> {
     const SettingProfileDevPage(),
     // const UserProfileScreen(),
   ];
+
   @override
   Widget build(BuildContext context) {
+    hiringController.unNewNotification();
     return Scaffold(
       bottomNavigationBar: Container(
           margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -46,7 +51,14 @@ class _MainHomePageState extends State<MainHomePage> {
               selectedItemColor: Colors.redAccent,
               unselectedItemColor: Colors.black,
               currentIndex: currentIndex,
-              onTap: (index) => setState(() => currentIndex = index),
+              onTap: (index) {
+                setState(() {
+                  currentIndex = index;
+                  if (index == 1) {
+                    hiringController.unNewNotification();
+                  }
+                });
+              },
               items: [
                 const BottomNavigationBarItem(
                   icon: Icon(
@@ -56,14 +68,12 @@ class _MainHomePageState extends State<MainHomePage> {
                 ),
                 BottomNavigationBarItem(
                   icon: FutureBuilder<int>(
-                    future: hiringController
-                        .countNotification(), // Gọi hàm để lấy số thông báo
+                    future: hiringController.countNotification(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.done) {
-                        // Đảm bảo rằng hàm đã hoàn thành và không có lỗi
                         return badges.Badge(
                           badgeContent: Text(
-                            snapshot.data.toString(), // Số thông báo thực tế
+                            snapshot.data.toString(),
                             style: const TextStyle(color: Colors.white),
                           ),
                           child: const Icon(

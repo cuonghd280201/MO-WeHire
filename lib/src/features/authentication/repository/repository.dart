@@ -66,4 +66,9 @@ abstract class Repository {
 
   Future<NotificationDev> getNotificationText(String deviceToken, String title,
       String content, String notificationType, int routeId);
+
+  Future<bool> readNotification(int? notificationId);
+  Future<bool> unNewNotification();
+
+  Future<bool> refreshToken();
 }

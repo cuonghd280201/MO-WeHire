@@ -1,6 +1,8 @@
 // ignore_for_file: library_private_types_in_public_api
 
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:html_unescape/html_unescape.dart';
 import 'package:intl/intl.dart';
 import 'package:we_hire/src/constants/colors.dart';
 import 'package:we_hire/src/features/authentication/controllers/project_controller.dart';
@@ -48,6 +50,7 @@ class _ProjectPageDetailState extends State<ProjectPageDetail> {
   }
 
   bool showFullDescription = false;
+  HtmlUnescape htmlUnescape = HtmlUnescape();
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +113,7 @@ class _ProjectPageDetailState extends State<ProjectPageDetail> {
                                 padding: const EdgeInsets.all(
                                     10.0), // Adjust the padding as needed
                                 child: Text(
-                                  '${projectNew?.devStatusInProject}',
+                                  '${projectNew?.statusString}',
                                   style: const TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.bold,
@@ -287,13 +290,18 @@ class _ProjectPageDetailState extends State<ProjectPageDetail> {
                     const SizedBox(
                       height: 10,
                     ),
-                    Text(
-                      showFullDescription
-                          ? '${projectNew?.description}'
+                    Html(
+                      data: showFullDescription
+                          ? '${htmlUnescape.convert(projectNew?.description ?? '')}'
                           : (projectNew?.description?.length ?? 0) <= 100
-                              ? '${projectNew?.description}'
-                              : '${projectNew?.description?.substring(0, 100)}...', // Show the first 100 characters
-                      style: Theme.of(context).textTheme.bodyLarge,
+                              ? '${htmlUnescape.convert(projectNew?.description ?? '')}'
+                              : '${htmlUnescape.convert(projectNew?.description?.substring(0, 100) ?? '')}...', // Show the first 100 characters
+                      style: {
+                        'body': Style(
+                          fontSize: FontSize
+                              .medium, // or FontSize.small, FontSize.large, etc.
+                        ),
+                      },
                     ),
                     if (projectNew?.description != null &&
                         projectNew!.description!.isNotEmpty &&

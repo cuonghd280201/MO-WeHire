@@ -40,7 +40,7 @@ class _FormScreenState extends State<TestLoginScreen> {
         await signIncontroller.SignIn(email, password);
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => MainHomePage(),
+            builder: (context) => const MainHomePage(),
           ),
         );
       } catch (error) {
@@ -95,13 +95,13 @@ class _FormScreenState extends State<TestLoginScreen> {
                   contentPadding: EdgeInsets.only(top: 15)),
               validator: (value) {
                 if (value!.isEmpty) {
-                  return "Enter Email";
+                  return "Please enter email";
                 }
                 bool emailValid = RegExp(
                         r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
                     .hasMatch(value);
                 if (!emailValid) {
-                  return "@gmail.com";
+                  return "Please enter a valid email address";
                 }
               },
             ),
@@ -117,7 +117,6 @@ class _FormScreenState extends State<TestLoginScreen> {
                   color: tBottomNavigation,
                 ),
                 labelText: 'Password',
-                hintText: 'Abc341',
                 suffix: InkWell(
                   onTap: () {
                     setState(() {
@@ -138,7 +137,7 @@ class _FormScreenState extends State<TestLoginScreen> {
               ),
               validator: (value) {
                 if (value!.isEmpty) {
-                  return "Enter Password";
+                  return "Please enter password";
                 }
                 // bool passwordvalid =
                 //     RegExp(r'^(?=.*[A-Z])(?=.*\d)').hasMatch(value);

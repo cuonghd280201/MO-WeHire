@@ -20,19 +20,6 @@ class RequestRepository implements Repository {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? token = prefs.getString('token');
     int? devId = prefs.getInt('devId');
-    // final uri =
-    //     Uri.parse("$apiServer/HiringRequest/ByDev?devId=$devId&status=$status");
-    // final response = await http.get(
-    //   uri,
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   //  headers: {"Authorization": "Bearer $token"},
-
-    //   // headers: <String, String>{
-    //   //   'Content-Type': 'application/json; charset=UTF-8',
-    //   // },
-    // );
     try {
       final String getAreasUrl = '$apiServer/HiringRequest/ByDev?devId=$devId';
 
@@ -53,13 +40,6 @@ class RequestRepository implements Repository {
     } catch (e) {
       throw Exception(e);
     }
-
-    // if (response.statusCode == 200) {
-    //   var body = json.decode(response.body);
-    //   for (var i = 0; i < body.length; i++) {
-    //     todoHiring.add(HiringNew.fromJson(body[i]));
-    //   }
-    // }
 
     return [];
   }
@@ -493,11 +473,19 @@ class RequestRepository implements Repository {
       prefs.setString('accessToken', data['accessToken']);
       prefs.setInt('devId', data['devId']);
       prefs.setInt('userId', data['userId']);
+      prefs.setString('accessTokenExp', data['accessTokenExp']);
+      prefs.setString('expiration', data['expiration']);
+      prefs.setString('refreshToken', data['refreshToken']);
       prefs.setString('deviceToken', deviceToken!);
       devId = data['devId'].toString();
       postUserDevie(deviceToken!);
       JWT_TOKEN_VALUE = data['token'].toString();
       IS_CONFIRM_VALUE = data['isConfirm'].toString();
+
+      final accessTokenExp = DateTime.parse(data['accessTokenExp']);
+      if (DateTime.now().isAfter(accessTokenExp)) {
+        await refreshToken();
+      }
     } else {
       throw Exception('Failed to sign in');
     }
@@ -606,18 +594,13 @@ class RequestRepository implements Repository {
     final String? accessToken = prefs.getString('accessToken');
     int? userId = prefs.getInt('userId');
 
-    final uri = Uri.parse("$apiServer/Account/Revoke");
-    final Map<String, dynamic> requestData = {
-      "userId": userId,
-    };
-
+    final uri = Uri.parse("$apiServer/Account/Revoke?userId=$userId");
     final Map<String, String> headers = {
       if (accessToken != null) "Authorization": "Bearer $accessToken",
     };
 
     final response = await http.delete(
       uri,
-      body: json.encode(requestData),
       headers: headers,
     );
 
@@ -631,16 +614,12 @@ class RequestRepository implements Repository {
   Future<bool> deleteUserDevice() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? accessToken = prefs.getString('accessToken');
-    int? userId = prefs.getInt('userId');
     final String? userDeviceId = prefs.getString('userDevice');
 
     final uri = Uri.parse("$apiServer/UserDevice/$userDeviceId");
-    final Map<String, dynamic> requestData = {
-      "userDeviceId": userDeviceId,
-    };
+
     final response = await http.delete(
       uri,
-      body: json.encode(requestData),
       headers: {
         "Content-Type": "application/json",
         "Authorization": "Bearer $accessToken"
@@ -939,8 +918,8 @@ class RequestRepository implements Repository {
   @override
   Future<List<HiringNew>> searchHiring(String? searchKeyString) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String? token = prefs.getString('token');
     int? devId = prefs.getInt('devId');
+    final String? accessToken = prefs.getString('accessToken');
     try {
       final String getAreasUrl =
           '$apiServer/HiringRequest/ByDev?devId=$devId&searchKeyString=$searchKeyString';
@@ -962,5 +941,74 @@ class RequestRepository implements Repository {
       throw Exception(e);
     }
     return [];
+  }
+
+  @override
+  Future<bool> readNotification(int? notificationId) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? accessToken = prefs.getString('accessToken');
+    int? userId = prefs.getInt('userId');
+
+    final uri = Uri.parse(
+        "$apiServer/Notification/Read?notificationId=$notificationId&userId=$userId");
+    final response = await http.put(
+      uri,
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer $accessToken"
+      },
+    );
+
+    if (response.statusCode == 204) {
+      return true;
+    }
+    return false;
+  }
+
+  @override
+  Future<bool> unNewNotification() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? accessToken = prefs.getString('accessToken');
+    int? userId = prefs.getInt('userId');
+
+    final uri = Uri.parse("$apiServer/Notification/UnNew?userId=$userId");
+
+    final response = await http.put(
+      uri,
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer $accessToken"
+      },
+    );
+
+    if (response.statusCode == 204) {
+      return true;
+    }
+    return false;
+  }
+
+  @override
+  Future<bool> refreshToken() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? accessToken = prefs.getString('accessToken');
+    final int? userId = prefs.getInt('userId');
+    final String? refreshToken = prefs.getString('refreshToken');
+    final response = await http.post(
+      Uri.parse('$apiServer/Account/Refresh'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        "Authorization": "Bearer $accessToken"
+      },
+      body: jsonEncode(<String, String>{
+        "accessToken": accessToken ?? "",
+        "refreshToken": refreshToken ?? "",
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      throw Exception('Failed to refresh tokens');
+    }
   }
 }

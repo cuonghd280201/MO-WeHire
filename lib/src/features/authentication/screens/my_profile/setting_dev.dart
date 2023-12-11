@@ -312,27 +312,49 @@ class _SettingProfileDevPageState extends State<SettingProfileDevPage> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Container(
-                                margin: const EdgeInsets.only(left: 20),
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.all(8),
-                                      decoration: BoxDecoration(
-                                        color: Colors.orange.withOpacity(
-                                            0.1), // Set the desired color
-                                        borderRadius: BorderRadius.circular(
-                                            8), // Set the desired border radius
+                              GestureDetector(
+                                onTap: () async {
+                                  bool tokenRevoked =
+                                      await developerController.revokeToken();
+
+                                  if (tokenRevoked) {
+                                    SharedPreferences preferences =
+                                        await SharedPreferences.getInstance();
+                                    await preferences.clear();
+
+                                    Navigator.of(context).pushAndRemoveUntil(
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const TestLoginScreen(),
                                       ),
-                                      child: Icon(
-                                        Icons.logout_rounded,
-                                        color: Colors
-                                            .orange, // Set the icon color to white or another contrasting color
+                                      (route) => false,
+                                    );
+                                  } else {
+                                    print("Token revocation failed.");
+                                  }
+                                },
+                                child: Container(
+                                  margin: const EdgeInsets.only(left: 20),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                          color: Colors.orange.withOpacity(
+                                              0.1), // Set the desired color
+                                          borderRadius: BorderRadius.circular(
+                                              8), // Set the desired border radius
+                                        ),
+                                        child: Icon(
+                                          Icons.logout_rounded,
+                                          color: Colors
+                                              .orange, // Set the icon color to white or another contrasting color
+                                        ),
                                       ),
-                                    ),
-                                    SizedBox(width: 16),
-                                    Text("LogOut"),
-                                  ],
+                                      SizedBox(width: 16),
+                                      Text("LogOut"),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ],

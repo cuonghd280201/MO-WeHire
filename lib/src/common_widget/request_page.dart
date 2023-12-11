@@ -7,6 +7,8 @@ import 'package:we_hire/src/constants/colors.dart';
 import 'package:we_hire/src/features/authentication/controllers/request_controller.dart';
 import 'package:we_hire/src/features/authentication/models/new_request.dart';
 import 'package:we_hire/src/features/authentication/repository/request_repository.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:html_unescape/html_unescape.dart';
 //import 'package:awesome_dialog/awesome_dialog.dart';
 
 class RequestPageDetail extends StatefulWidget {
@@ -53,6 +55,7 @@ class _YardDetailState extends State<RequestPageDetail> {
   }
 
   bool showFullDescription = false;
+  HtmlUnescape htmlUnescape = HtmlUnescape();
 
   @override
   Widget build(BuildContext context) {
@@ -348,13 +351,18 @@ class _YardDetailState extends State<RequestPageDetail> {
                     const SizedBox(
                       height: 10,
                     ),
-                    Text(
-                      showFullDescription
-                          ? '${hiringNew?.jobDescription}'
+                    Html(
+                      data: showFullDescription
+                          ? '${htmlUnescape.convert(hiringNew?.jobDescription ?? '')}'
                           : (hiringNew?.jobDescription?.length ?? 0) <= 100
-                              ? '${hiringNew?.jobDescription}'
-                              : '${hiringNew?.jobDescription?.substring(0, 100)}...', // Show the first 100 characters
-                      style: Theme.of(context).textTheme.bodyLarge,
+                              ? '${htmlUnescape.convert(hiringNew?.jobDescription ?? '')}'
+                              : '${htmlUnescape.convert(hiringNew?.jobDescription?.substring(0, 100) ?? '')}...', // Show the first 100 characters
+                      style: {
+                        'body': Style(
+                          fontSize: FontSize
+                              .medium, // or FontSize.small, FontSize.large, etc.
+                        ),
+                      },
                     ),
                     if (hiringNew?.jobDescription != null &&
                         hiringNew!.jobDescription!.isNotEmpty &&

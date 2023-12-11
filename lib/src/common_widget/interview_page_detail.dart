@@ -360,41 +360,8 @@ class _InterviewPageDetailState extends State<InterviewPageDetail> {
                               ),
                             ],
                           ),
-                          // const SizedBox(
-                          //   height: 20,
-                          // ),
-                          // Row(
-                          //   children: [
-                          //     SizedBox(
-                          //       width: MediaQuery.of(context).size.width / 3,
-                          //       child: const Text(
-                          //         "Outlook Meet",
-                          //         style: TextStyle(
-                          //           fontSize: 15,
-                          //           fontWeight: FontWeight.bold,
-                          //           color: tBottomNavigation,
-                          //         ),
-                          //       ),
-                          //     ),
-                          //     SizedBox(
-                          //       width: MediaQuery.of(context).size.width / 3,
-                          //       child: Text(
-                          //         '${interviewList?.outlookLink}',
-                          //         style: Theme.of(context)
-                          //             .textTheme
-                          //             .bodyMedium
-                          //             ?.copyWith(
-                          //               decoration: TextDecoration.underline,
-                          //               fontWeight: FontWeight.bold,
-                          //               color: Colors.black,
-                          //             ),
-                          //       ),
-                          //     ),
-                          //   ],
-                          // ),
                         ],
                       ),
-                    // ... Other widget code ...
                   ],
                 ),
               ),
@@ -406,189 +373,69 @@ class _InterviewPageDetailState extends State<InterviewPageDetail> {
               child: Align(
                 alignment: Alignment.bottomCenter,
                 child: Container(
-                  padding: const EdgeInsets.all(16),
+                  color: Colors.white, // Chọn màu nền cho Row
+                  padding: const EdgeInsets.all(10),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Container(
-                        width: (MediaQuery.of(context).size.width / 2) - 33,
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 76, 184, 155),
-                          boxShadow: [
-                            BoxShadow(
-                              color: lightgreenshede1.withOpacity(0.5),
-                              spreadRadius: 5,
-                              blurRadius: 7,
-                              offset: const Offset(0, 3),
-                            ),
-                          ],
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            elevation: 0,
-                            // ignore: deprecated_member_use
-                            primary: Theme.of(context).primaryColor,
-                            backgroundColor:
-                                const Color.fromARGB(255, 76, 184, 155),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          elevation: 0,
+                          primary: Theme.of(context).primaryColor,
+                          backgroundColor: tHeader,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
                           ),
-                          onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: const Text(
-                                    'Do you want ensure approved this request?',
-                                    style: TextStyle(color: tBottomNavigation),
-                                  ),
-                                  contentPadding:
-                                      const EdgeInsets.fromLTRB(5, 5, 5, 5),
-                                  actions: [
-                                    TextButton(
-                                      child: const Text(
-                                        'No',
-                                        style:
-                                            TextStyle(color: tBottomNavigation),
-                                      ),
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                    ),
-                                    TextButton(
-                                      child: const Text(
-                                        'Yes',
-                                        style:
-                                            TextStyle(color: tBottomNavigation),
-                                      ),
-                                      onPressed: () async {
-                                        final approvalSuccess =
-                                            await interview.approvedInterview(
-                                                interviewList!.interviewId);
-
-                                        if (approvalSuccess) {
-                                          final updatedInterview =
-                                              await interviewController
-                                                  .fetchInterviewById(
-                                                      widget.interviewId);
-
-                                          setState(() {
-                                            interviewList = updatedInterview;
-                                          });
-
-                                          Navigator.of(context).pop();
-                                          Fluttertoast.showToast(
-                                            msg:
-                                                "Approved Interview Successfully.",
-                                            toastLength: Toast.LENGTH_SHORT,
-                                            gravity: ToastGravity.BOTTOM,
-                                            timeInSecForIosWeb: 1,
-                                            backgroundColor:
-                                                const Color.fromARGB(
-                                                    255, 0, 255, 115),
-                                            textColor: const Color.fromARGB(
-                                                255, 0, 0, 0),
-                                            fontSize: 16.0,
-                                          );
-                                        }
-                                      },
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          },
-                          child: const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.check),
-                              SizedBox(width: 8),
-                              Text(
-                                'Approved ',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
+                          minimumSize:
+                              Size(150, 40), // Adjust the width as needed
                         ),
-                      ),
-                      const SizedBox(width: 10),
-                      Container(
-                        width: (MediaQuery.of(context).size.width / 2) - 33,
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 233, 72, 27),
-                          boxShadow: [
-                            BoxShadow(
-                              color: kRed.withOpacity(0.5),
-                              spreadRadius: 5,
-                              blurRadius: 7,
-                              offset: const Offset(0, 3),
-                            ),
-                          ],
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            elevation: 0,
-                            // ignore: deprecated_member_use
-                            primary: Theme.of(context).primaryColor,
-                            backgroundColor:
-                                const Color.fromARGB(255, 233, 72, 27),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                          ),
-                          onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: const Text(
-                                    'Do you want ensure reject this request?',
-                                    style: TextStyle(color: tBottomNavigation),
-                                  ),
-                                  content: TextFormField(
-                                    maxLines: 1,
-                                    decoration: const InputDecoration(
-                                      labelText: 'Reason Reject',
-                                      prefixIcon: Icon(Icons.read_more_sharp),
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text(
+                                  'Do you want ensure approved this request?',
+                                  style: TextStyle(color: tBottomNavigation),
+                                ),
+                                contentPadding:
+                                    const EdgeInsets.fromLTRB(5, 5, 5, 5),
+                                actions: [
+                                  TextButton(
+                                    child: const Text(
+                                      'No',
+                                      style:
+                                          TextStyle(color: tBottomNavigation),
                                     ),
-                                    controller: reasonController,
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Please enter a valid last name.';
-                                      }
-                                      return null; // Return null if the value is valid.
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
                                     },
                                   ),
-                                  contentPadding:
-                                      const EdgeInsets.fromLTRB(5, 5, 5, 5),
-                                  actions: [
-                                    TextButton(
-                                      child: const Text(
-                                        'No',
-                                        style:
-                                            TextStyle(color: tBottomNavigation),
-                                      ),
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
+                                  TextButton(
+                                    child: const Text(
+                                      'Yes',
+                                      style:
+                                          TextStyle(color: tBottomNavigation),
                                     ),
-                                    TextButton(
-                                      child: const Text(
-                                        'Yes',
-                                        style:
-                                            TextStyle(color: tBottomNavigation),
-                                      ),
-                                      onPressed: () {
-                                        String reason = reasonController.text;
-                                        interview.rejectInterview(
-                                            interviewList!.interviewId, reason);
+                                    onPressed: () async {
+                                      final approvalSuccess =
+                                          await interview.approvedInterview(
+                                              interviewList!.interviewId);
+
+                                      if (approvalSuccess) {
+                                        final updatedInterview =
+                                            await interviewController
+                                                .fetchInterviewById(
+                                                    widget.interviewId);
+
+                                        setState(() {
+                                          interviewList = updatedInterview;
+                                        });
+
                                         Navigator.of(context).pop();
                                         Fluttertoast.showToast(
                                           msg:
-                                              "Rejected Interview Succesfully.",
+                                              "Approved Interview Successfully.",
                                           toastLength: Toast.LENGTH_SHORT,
                                           gravity: ToastGravity.BOTTOM,
                                           timeInSecForIosWeb: 1,
@@ -598,25 +445,113 @@ class _InterviewPageDetailState extends State<InterviewPageDetail> {
                                               255, 0, 0, 0),
                                           fontSize: 16.0,
                                         );
-                                        fetchData();
-                                      },
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          },
-                          child: const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.cancel),
-                              SizedBox(width: 8),
-                              Text(
-                                'Rejected',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ],
+                                      }
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.check),
+                            SizedBox(width: 8),
+                            Text(
+                              'Approved ',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 30),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          elevation: 0,
+                          primary: Theme.of(context).primaryColor,
+                          backgroundColor: Colors.redAccent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
                           ),
+                          minimumSize: Size(150, 40),
+                        ),
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text(
+                                  'Do you want ensure reject this request?',
+                                  style: TextStyle(color: tBottomNavigation),
+                                ),
+                                content: TextFormField(
+                                  maxLines: 1,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Reason Reject',
+                                    prefixIcon: Icon(Icons.read_more_sharp),
+                                  ),
+                                  controller: reasonController,
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Please enter a valid last name.';
+                                    }
+                                    return null; // Return null if the value is valid.
+                                  },
+                                ),
+                                contentPadding:
+                                    const EdgeInsets.fromLTRB(5, 5, 5, 5),
+                                actions: [
+                                  TextButton(
+                                    child: const Text(
+                                      'No',
+                                      style:
+                                          TextStyle(color: tBottomNavigation),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                  TextButton(
+                                    child: const Text(
+                                      'Yes',
+                                      style:
+                                          TextStyle(color: tBottomNavigation),
+                                    ),
+                                    onPressed: () {
+                                      String reason = reasonController.text;
+                                      interview.rejectInterview(
+                                          interviewList!.interviewId, reason);
+                                      Navigator.of(context).pop();
+                                      Fluttertoast.showToast(
+                                        msg: "Rejected Interview Succesfully.",
+                                        toastLength: Toast.LENGTH_SHORT,
+                                        gravity: ToastGravity.BOTTOM,
+                                        timeInSecForIosWeb: 1,
+                                        backgroundColor: const Color.fromARGB(
+                                            255, 0, 255, 115),
+                                        textColor:
+                                            const Color.fromARGB(255, 0, 0, 0),
+                                        fontSize: 16.0,
+                                      );
+                                      fetchData();
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.cancel),
+                            SizedBox(width: 8),
+                            Text(
+                              'Rejected',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ],
                         ),
                       ),
                     ],

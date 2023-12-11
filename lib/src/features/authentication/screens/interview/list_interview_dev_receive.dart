@@ -51,14 +51,13 @@ class _ListInterviewDevReceiveState extends State<ListInterviewDevReceive> {
 
     setState(() {
       displayCategories = searchedInterviews
-          .map(
-              (interview) => interview.statusString ?? '') // handle null values
+          .map((interview) => interview.statusString ?? '')
           .toSet()
           .toList();
-      //    displayCategories = List.from(categories);
     });
   }
 
+  @override
   Widget build(BuildContext context) {
     return buildViewPage();
   }

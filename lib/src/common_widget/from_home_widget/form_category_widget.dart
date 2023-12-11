@@ -61,7 +61,7 @@ class _CategoriesWidgetState extends State<CategoriesWidget> {
       size: 30,
     ),
     const Icon(
-      Icons.play_circle_fill,
+      Icons.calendar_month_sharp,
       color: Colors.orangeAccent,
       size: 30,
     ),
@@ -104,18 +104,23 @@ class _CategoriesWidgetState extends State<CategoriesWidget> {
                   ),
                   IconButton(
                     onPressed: () async {
-                      // Revoke the user's token
-                      await developerController.revokeToken();
+                      bool tokenRevoked =
+                          await developerController.revokeToken();
 
-                      // Clear shared preferences and navigate to the login screen
-                      SharedPreferences preferences =
-                          await SharedPreferences.getInstance();
-                      await preferences.clear();
-                      Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(
-                            builder: (context) => const TestLoginScreen()),
-                        (route) => false,
-                      );
+                      if (tokenRevoked) {
+                        SharedPreferences preferences =
+                            await SharedPreferences.getInstance();
+                        await preferences.clear();
+
+                        Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                            builder: (context) => const TestLoginScreen(),
+                          ),
+                          (route) => false,
+                        );
+                      } else {
+                        print("Token revocation failed.");
+                      }
                     },
                     icon: const Icon(
                       Icons.logout,
@@ -130,8 +135,8 @@ class _CategoriesWidgetState extends State<CategoriesWidget> {
               Row(
                 children: [
                   Container(
-                    width: 60,
-                    height: 60,
+                    width: 80,
+                    height: 80,
                     decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         image: DecorationImage(
@@ -162,28 +167,28 @@ class _CategoriesWidgetState extends State<CategoriesWidget> {
                       color: Colors.white),
                 ),
               ),
-              Container(
-                margin: const EdgeInsets.only(top: 5, bottom: 20),
-                width: MediaQuery.of(context).size.width,
-                height: 40,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: TextFormField(
-                  decoration: InputDecoration(
-                      border: InputBorder.none,
-                      hintText: "Search hiring request....",
-                      hintStyle: TextStyle(
-                        color: Colors.black.withOpacity(0.5),
-                      ),
-                      prefixIcon: const Icon(
-                        Icons.search,
-                        size: 25,
-                      )),
-                ),
-              )
+              // Container(
+              //   margin: const EdgeInsets.only(top: 5, bottom: 20),
+              //   width: MediaQuery.of(context).size.width,
+              //   height: 40,
+              //   alignment: Alignment.center,
+              //   decoration: BoxDecoration(
+              //     color: Colors.white,
+              //     borderRadius: BorderRadius.circular(10),
+              //   ),
+              //   child: TextFormField(
+              //     decoration: InputDecoration(
+              //         border: InputBorder.none,
+              //         hintText: "Search hiring request....",
+              //         hintStyle: TextStyle(
+              //           color: Colors.black.withOpacity(0.5),
+              //         ),
+              //         prefixIcon: const Icon(
+              //           Icons.search,
+              //           size: 25,
+              //         )),
+              //   ),
+              // )
             ]),
           ),
           Padding(
@@ -193,7 +198,7 @@ class _CategoriesWidgetState extends State<CategoriesWidget> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "DashBoard",
+                    "Dash Board",
                     style: TextStyle(
                       fontSize: 23,
                       fontWeight: FontWeight.w600,
@@ -254,7 +259,7 @@ class _CategoriesWidgetState extends State<CategoriesWidget> {
                             status[index],
                             style: Theme.of(context)
                                 .textTheme
-                                .bodyMedium
+                                .bodyLarge
                                 ?.copyWith(
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white),

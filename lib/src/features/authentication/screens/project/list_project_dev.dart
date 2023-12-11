@@ -92,6 +92,7 @@ class _ListProjectDevState extends State<ListProjectDev> {
                       onChanged: _onSearchChanged,
                       decoration: InputDecoration(
                         labelText: 'Search',
+                        hintText: 'Search project...',
                         labelStyle: const TextStyle(
                           color: tBottomNavigation, // Set the label text color
                         ),
@@ -114,23 +115,6 @@ class _ListProjectDevState extends State<ListProjectDev> {
                   buildStaticYardList(),
                 ],
               ),
-            ),
-          ),
-          Positioned(
-            bottom: 10,
-            right: 10,
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const ListProjectDev()));
-              },
-              style: ElevatedButton.styleFrom(
-                shape: const CircleBorder(),
-                backgroundColor: tBottomNavigation,
-              ),
-              child: const Icon(Icons.refresh),
             ),
           ),
         ],
@@ -172,7 +156,6 @@ class _ListProjectDevState extends State<ListProjectDev> {
                 physics: const BouncingScrollPhysics(),
                 itemCount: snapshot.data?.length ?? 0,
                 itemBuilder: (BuildContext context, int index) {
-                  // Check if the index is within the valid range
                   if (index >= 0 && index < filteredList!.length) {
                     return ProjectCard(project: filteredList[index]);
                   } else {

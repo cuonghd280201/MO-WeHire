@@ -116,4 +116,12 @@ class DeveloperController {
   Future<bool> deleteProfesstionalExperience(int? professionalId) async {
     return _repository.deleteProfesstionalExperience(professionalId);
   }
+
+  Future<bool> readNotification(int? notificationId) async {
+    return _repository.readNotification(notificationId);
+  }
+
+  Future<bool> unNewNotification() async {
+    return _repository.unNewNotification();
+  }
 }

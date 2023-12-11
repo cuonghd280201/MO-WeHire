@@ -6,8 +6,10 @@ import 'package:we_hire/main.dart';
 import 'package:we_hire/src/common_widget/interview_page_detail.dart';
 import 'package:we_hire/src/common_widget/request_page.dart';
 import 'package:we_hire/src/constants/colors.dart';
+import 'package:we_hire/src/features/authentication/controllers/developer_controller.dart';
 
 import 'package:we_hire/src/features/authentication/models/notification.dart';
+import 'package:we_hire/src/features/authentication/repository/request_repository.dart';
 
 class NotificationCard extends StatefulWidget {
   final NotificationDev? notificationDev;
@@ -22,6 +24,8 @@ class NotificationCard extends StatefulWidget {
 class _YardSimpleCardState extends State<NotificationCard>
     with SingleTickerProviderStateMixin {
   late AnimationController animationController;
+
+  final notificationController = DeveloperController(RequestRepository());
 
   @override
   void initState() {
@@ -38,29 +42,35 @@ class _YardSimpleCardState extends State<NotificationCard>
   }
 
   void viewYard() {
-    if (widget.notificationDev?.routeId != null &&
-        widget.notificationDev?.notificationTypeName != null) {
-      if (widget.notificationDev?.notificationTypeName == 'Hiring Request') {
-        Navigator.push(
-            navigatorKey.currentState!.context,
-            MaterialPageRoute(
+    notificationController
+        .readNotification(widget.notificationDev?.notificationId)
+        .then((success) {
+      // Check if the notification was successfully read
+      if (success != null && success) {
+        if (widget.notificationDev?.routeId != null &&
+            widget.notificationDev?.notificationTypeName != null) {
+          if (widget.notificationDev?.notificationTypeName ==
+              'Hiring Request') {
+            Navigator.push(
+              navigatorKey.currentState!.context,
+              MaterialPageRoute(
                 builder: (context) =>
-                    RequestPageDetail(widget.notificationDev?.routeId)));
-      } else if (widget.notificationDev?.notificationTypeName == 'Interview') {
-        Navigator.push(
-            navigatorKey.currentState!.context,
-            MaterialPageRoute(
-              builder: (context) =>
-                  InterviewPageDetail(widget.notificationDev?.routeId),
-            ));
+                    RequestPageDetail(widget.notificationDev?.routeId),
+              ),
+            );
+          } else if (widget.notificationDev?.notificationTypeName ==
+              'Interview') {
+            Navigator.push(
+              navigatorKey.currentState!.context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    InterviewPageDetail(widget.notificationDev?.routeId),
+              ),
+            );
+          }
+        }
       }
-    }
-    // Navigator.of(context).push(
-    //   MaterialPageRoute(
-    //     builder: (context) =>
-    //         InterviewPageDetail(widget.notificationDev?.routeId),
-    //   ),
-    // );
+    });
   }
 
   @override
@@ -120,7 +130,7 @@ class _YardSimpleCardState extends State<NotificationCard>
                     height: 15,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: widget.notificationDev?.isNew ?? false
+                      color: widget.notificationDev?.isRead == false
                           ? Colors.green
                           : Colors.grey,
                     ),

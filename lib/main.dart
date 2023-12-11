@@ -63,7 +63,6 @@ class MyApp extends StatelessWidget {
       themeMode: ThemeMode.system,
       //home: MainHomePage(),
       navigatorKey: navigatorKey,
-      //home: const SettingProfileDevPage(),
       home: const TestLoginScreen(),
       routes: {
         CategoriesWidget.routeName: (context) => const CategoriesWidget(),
@@ -176,6 +175,7 @@ class _ListViewPageState extends State<ListViewPage> {
                       onChanged: _onSearchChanged,
                       decoration: InputDecoration(
                         labelText: 'Search',
+                        hintText: 'Search hiring request...',
                         labelStyle: const TextStyle(
                           color: tBottomNavigation, // Set the label text color
                         ),
@@ -198,23 +198,6 @@ class _ListViewPageState extends State<ListViewPage> {
                   buildStaticYardList(),
                 ],
               ),
-            ),
-          ),
-          Positioned(
-            bottom: 10, // Điều chỉnh vị trí dọc của nút
-            right: 10, // Điều chỉnh vị trí ngang của nút
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const ListViewPage()));
-              },
-              style: ElevatedButton.styleFrom(
-                shape: const CircleBorder(),
-                backgroundColor: kSecondaryColor, // Màu nền của nút
-              ),
-              child: const Icon(Icons.refresh),
             ),
           ),
         ],

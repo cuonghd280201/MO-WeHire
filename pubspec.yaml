@@ -54,6 +54,8 @@ dependencies:
   badges: ^3.1.2
   firebase_storage: ^11.4.1
   firebase_database: ^10.3.3
+  flutter_html: ^3.0.0-beta.2
+  html_unescape: ^2.0.0
 
 
 

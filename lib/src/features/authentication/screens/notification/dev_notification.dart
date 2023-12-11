@@ -85,23 +85,23 @@ class _NotificationDevPageState extends State<NotificationDevPage> {
               ),
             ),
           ),
-          Positioned(
-            bottom: 10, // Điều chỉnh vị trí dọc của nút
-            right: 10, // Điều chỉnh vị trí ngang của nút
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const NotificationDevPage()));
-              },
-              style: ElevatedButton.styleFrom(
-                shape: const CircleBorder(),
-                backgroundColor: primarygreen, // Màu nền của nút
-              ),
-              child: const Icon(Icons.refresh),
-            ),
-          ),
+          // Positioned(
+          //   bottom: 10, // Điều chỉnh vị trí dọc của nút
+          //   right: 10, // Điều chỉnh vị trí ngang của nút
+          //   child: ElevatedButton(
+          //     onPressed: () {
+          //       Navigator.pushReplacement(
+          //           context,
+          //           MaterialPageRoute(
+          //               builder: (context) => const NotificationDevPage()));
+          //     },
+          //     style: ElevatedButton.styleFrom(
+          //       shape: const CircleBorder(),
+          //       backgroundColor: primarygreen, // Màu nền của nút
+          //     ),
+          //     child: const Icon(Icons.refresh),
+          //   ),
+          // ),
         ],
       ),
     );
