@@ -1,6 +1,6 @@
 # we_hire
 
-A new Flutter project.
+The app tracks a developer's work process while working at a company
 
 ## Getting Started
 
