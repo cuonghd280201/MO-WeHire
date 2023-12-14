@@ -7,7 +7,7 @@ import 'package:we_hire/src/features/authentication/repository/request_repositor
 import 'package:we_hire/src/features/authentication/screens/welcome/main_page.dart';
 
 class ListInterviewDevReceive extends StatefulWidget {
-  const ListInterviewDevReceive({super.key});
+  const ListInterviewDevReceive({Key? key}) : super(key: key);
 
   @override
   _ListInterviewDevReceiveState createState() =>
@@ -15,23 +15,25 @@ class ListInterviewDevReceive extends StatefulWidget {
   static const String routeName = "/status/interview";
 }
 
-class _ListInterviewDevReceiveState extends State<ListInterviewDevReceive> {
+class _ListInterviewDevReceiveState extends State<ListInterviewDevReceive>
+    with SingleTickerProviderStateMixin {
   var hiringController = InterviewController(RequestRepository());
   String searchQuery = '';
 
   final List<String> categories = [
-    'Waiting Approval',
+    'Waiting',
     'Approved',
     'Rejected',
     'Completed'
   ];
-  List<String> selectedCategories = ['Waiting Approval'];
-  List<String> displayCategories =
-      []; // Separate variable for displaying categories
+
+  late TabController _tabController;
+  List<String> displayCategories = [];
 
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: categories.length, vsync: this);
     _refreshData();
   }
 
@@ -75,75 +77,76 @@ class _ListInterviewDevReceiveState extends State<ListInterviewDevReceive> {
             Navigator.pushReplacementNamed(context, MainHomePage.routeName);
           },
         ),
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: categories.map((category) => Tab(text: category)).toList(),
+          indicatorColor: Colors.white,
+        ),
       ),
-      body: Stack(
-        children: [
-          Row(
-            children: [
-              Expanded(
-                flex: 2,
-                child: Container(),
+      body: Container(
+        margin: const EdgeInsets.only(top: 15.0),
+        child: Column(
+          children: [
+            Container(
+              width: MediaQuery.of(context).size.width * 1,
+              height: 50,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
               ),
-              Expanded(
-                flex: 1,
-                child: Container(
-                  color: greenshede1.withOpacity(0.1),
-                ),
-              ),
-            ],
-          ),
-          SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  Container(
-                    width: MediaQuery.of(context).size.width * 1,
-                    height: 50,
-                    child: TextField(
-                      onChanged: (value) {
-                        setState(() {
-                          searchQuery = value.toLowerCase();
-                        });
-                        _searchInterviews();
-                      },
-                      decoration: InputDecoration(
-                        labelText: 'Search',
-                        labelStyle: const TextStyle(
-                          color: tBottomNavigation, // Set the label text color
-                        ),
-                        focusedBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.black),
-                        ),
-                        prefixIcon: const Icon(
-                          Icons.search,
-                          color: tBottomNavigation,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        onChanged: (value) {
+                          setState(() {
+                            searchQuery = value.toLowerCase();
+                          });
+                          _searchInterviews();
+                        },
+                        decoration: InputDecoration(
+                          labelText: 'Search',
+                          labelStyle: const TextStyle(
+                            color:
+                                tBottomNavigation, // Set the label text color
+                          ),
+                          focusedBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.black),
+                          ),
+                          prefixIcon: const Icon(
+                            Icons.search,
+                            color: tBottomNavigation,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  buildStaticYardList(),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+            const SizedBox(
+              height: 10,
+            ),
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: categories.map((category) {
+                  return buildStaticYardList(category);
+                }).toList(),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget buildStaticYardList() {
+  Widget buildStaticYardList(String category) {
     return FutureBuilder<List<Interview>>(
       future: hiringController.fetchInterviewList(null),
       builder: (context, snapshot) {
@@ -160,87 +163,26 @@ class _ListInterviewDevReceiveState extends State<ListInterviewDevReceive> {
         }
 
         List<Interview> filteredInterviews = snapshot.data?.where((interview) {
-              return selectedCategories.contains(interview.statusString);
+              return interview.statusString == category;
             }).toList() ??
             [];
 
-        return Column(
-          children: [
-            SizedBox(
-              height: 40,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: displayCategories
-                    .map((category) => Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                        child: FilterChip(
-                          label: Text(
-                            category,
-                            style: TextStyle(
-                              color: selectedCategories.contains(category)
-                                  ? Colors.white
-                                  : Colors.white,
-                            ),
-                          ),
-                          selected: selectedCategories.contains(category),
-                          onSelected: (selected) {
-                            setState(() {
-                              if (selected) {
-                                selectedCategories.add(category);
-                              } else {
-                                selectedCategories.remove(category);
-                              }
-                            });
-                          },
-                          backgroundColor: selectedCategories.contains(category)
-                              ? Colors.blue
-                              : tBottomNavigation,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                            side: BorderSide(
-                              color: selectedCategories.contains(category)
-                                  ? Colors.grey
-                                  : tBottomNavigation,
-                            ),
-                          ),
-                        )))
-                    .toList(),
-              ),
-            ),
-            SizedBox(
-                height: 600,
-                child: filteredInterviews.length > 0
-                    ? ListView.builder(
-                        scrollDirection: Axis.vertical,
-                        physics: const BouncingScrollPhysics(),
-                        itemCount: filteredInterviews.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          Interview interview = filteredInterviews[index];
-
-                          bool matchesSearch = interview.title!
-                              .toLowerCase()
-                              .contains(searchQuery);
-
-                          if (matchesSearch || searchQuery.isEmpty) {
-                            return InterviewPageCard(
-                              interview: interview,
-                            );
-                          } else {
-                            return Container();
-                          }
-                        },
-                      )
-                    : Center(
-                        child: ClipOval(
-                          child: Image.asset(
-                            'assets/images/splash_images/interview.png',
-                            height: 300,
-                            width: 300,
-                          ),
-                        ),
-                      )),
-          ],
-        );
+        return ListView.builder(
+            scrollDirection: Axis.vertical,
+            physics: const BouncingScrollPhysics(),
+            itemCount: filteredInterviews.length,
+            itemBuilder: (BuildContext context, int index) {
+              Interview interview = filteredInterviews[index];
+              bool matchesSearch =
+                  interview.title!.toLowerCase().contains(searchQuery);
+              if (matchesSearch || searchQuery.isEmpty) {
+                return InterviewPageCard(
+                  interview: interview,
+                );
+              } else {
+                return Container();
+              }
+            });
       },
     );
   }

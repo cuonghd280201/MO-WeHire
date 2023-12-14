@@ -2,9 +2,11 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:we_hire/src/features/authentication/models/education.dart';
 import 'package:we_hire/src/features/authentication/models/interview.dart';
 import 'package:we_hire/src/features/authentication/models/notification.dart';
+import 'package:we_hire/src/features/authentication/models/payslip.dart';
 import 'package:we_hire/src/features/authentication/models/professtional_experience.dart';
 import 'package:we_hire/src/features/authentication/models/project.dart';
 import 'package:we_hire/src/features/authentication/models/user.dart';
+import 'package:we_hire/src/features/authentication/models/worklog.dart';
 import 'package:we_hire/src/features/authentication/repository/repository.dart';
 import 'dart:convert';
 import 'package:http_parser/http_parser.dart';
@@ -209,7 +211,7 @@ class RequestRepository implements Repository {
     if (response.statusCode == 201) {
       return true;
     } else {
-      throw Exception('Failed to sign in');
+      throw Exception('Failed to post Education in');
     }
   }
 
@@ -474,18 +476,13 @@ class RequestRepository implements Repository {
       prefs.setInt('devId', data['devId']);
       prefs.setInt('userId', data['userId']);
       prefs.setString('accessTokenExp', data['accessTokenExp']);
-      prefs.setString('expiration', data['expiration']);
+      prefs.setString('refreshTokenExp', data['refreshTokenExp']);
       prefs.setString('refreshToken', data['refreshToken']);
       prefs.setString('deviceToken', deviceToken!);
       devId = data['devId'].toString();
       postUserDevie(deviceToken!);
       JWT_TOKEN_VALUE = data['token'].toString();
       IS_CONFIRM_VALUE = data['isConfirm'].toString();
-
-      final accessTokenExp = DateTime.parse(data['accessTokenExp']);
-      if (DateTime.now().isAfter(accessTokenExp)) {
-        await refreshToken();
-      }
     } else {
       throw Exception('Failed to sign in');
     }
@@ -805,17 +802,22 @@ class RequestRepository implements Repository {
     return false;
   }
 
-  @override
-  Future<List<Project>> getProject(String? devStatusInProject) async {
+  Future<List<Project>> getProject(List<int> devStatusInProject) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? accessToken = prefs.getString('accessToken');
     int? devId = prefs.getInt('devId');
-    final uri = Uri.parse(
-        "$apiServer/Project/Developer/$devId?devStatusInProject=$devStatusInProject");
+
+    final uri = Uri.parse("$apiServer/Project/Developer/$devId")
+        .replace(queryParameters: {
+      'devStatusInProject':
+          devStatusInProject.map((status) => status.toString()).toList()
+    });
+
     final response = await http.get(
       uri,
       headers: {"Authorization": "Bearer $accessToken"},
     );
+
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       final List<dynamic> requestData = data['data'];
@@ -827,6 +829,50 @@ class RequestRepository implements Repository {
 
     return [];
   }
+
+  // @override
+  // Future<List<Project>> getProject(String? devStatusInProject) async {
+  //   final bool tokenValid = await checkAndRefreshToken();
+
+  //   if (!tokenValid) {
+  //     // Token is not valid, handle accordingly (e.g., show login screen)
+  //     return [];
+  //   }
+
+  //   final SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   final String? accessToken = prefs.getString('accessToken');
+  //   int? devId = prefs.getInt('devId');
+
+  //   final uri = Uri.parse(
+  //       "$apiServer/Project/Developer/$devId?devStatusInProject=$devStatusInProject");
+
+  //   final response = await http.get(
+  //     uri,
+  //     headers: {"Authorization": "Bearer $accessToken"},
+  //   );
+
+  //   if (response.statusCode == 200) {
+  //     final data = json.decode(response.body);
+  //     final List<dynamic> requestData = data['data'];
+  //     return requestData
+  //         .map((data) => Project.fromJson(data))
+  //         .toList()
+  //         .cast<Project>();
+  //   } else if (response.statusCode == 401) {
+  //     final bool tokenRefreshed = await checkAndRefreshToken();
+
+  //     if (tokenRefreshed) {
+  //       return getProject(devStatusInProject);
+  //     } else {
+  //       // Token refresh failed, handle accordingly (e.g., show login screen)
+  //       return [];
+  //     }
+  //   }
+
+  //   // Handle other response status codes if needed
+
+  //   return [];
+  // }
 
   // @override
   // Future<List<Project>> getProject(
@@ -1010,5 +1056,107 @@ class RequestRepository implements Repository {
     } else {
       throw Exception('Failed to refresh tokens');
     }
+  }
+
+  Future<bool> checkAndRefreshToken() async {
+    try {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final String? accessToken = prefs.getString('accessToken');
+      final String? accessTokenExp = prefs.getString('accessTokenExp');
+
+      if (accessToken != null && accessTokenExp != null) {
+        final DateTime accessTokenExpDate = DateTime.parse(accessTokenExp);
+
+        if (DateTime.now().isAfter(accessTokenExpDate)) {
+          // Access token has expired, refresh it
+          await refreshToken();
+
+          // Refresh successful, update access token expiration time
+          final String? updatedAccessTokenExp =
+              prefs.getString('refreshTokenExp');
+          if (updatedAccessTokenExp != null) {
+            final DateTime updatedExpDate =
+                DateTime.parse(updatedAccessTokenExp);
+            if (DateTime.now().isBefore(updatedExpDate)) {
+              // Update successful, return true
+              return true;
+            } else {
+              // Refreshed token has already expired, perform logout
+              await logout();
+              return false;
+            }
+          } else {
+            // Failed to get updated access token expiration time, perform logout
+            await logout();
+            return false;
+          }
+        }
+      }
+
+      // Access token is still valid
+      return true;
+    } catch (e) {
+      // Handle refresh token failure, perform logout
+      print('Failed to refresh token: $e');
+      await logout();
+      return false;
+    }
+  }
+
+  Future<void> logout() async {
+    // Perform logout actions, such as clearing stored tokens and user information
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove('accessToken');
+    prefs.remove('devId');
+    prefs.remove('userId');
+    prefs.remove('accessTokenExp');
+    prefs.remove('expiration');
+    prefs.remove('refreshToken');
+    prefs.remove('deviceToken');
+    // Additional logout actions, if any
+  }
+
+  @override
+  Future<List<PaySlip>> getPaySlipByProjectId(int? projectId) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? accessToken = prefs.getString('accessToken');
+    int? devId = prefs.getInt('devId');
+    final uri = Uri.parse(
+        "$apiServer/PaySlip/ByDeveloper?projectId=$projectId&developerId=$devId");
+    final response = await http.get(
+      uri,
+      headers: {"Authorization": "Bearer $accessToken"},
+    );
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final List<dynamic> requestData = data['data'];
+      return requestData
+          .map((data) => PaySlip.fromJson(data))
+          .toList()
+          .cast<PaySlip>();
+    }
+
+    return [];
+  }
+
+  @override
+  Future<List<WorkLog>> getWorkLogByPaySlipId(int? paySlipId) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? accessToken = prefs.getString('accessToken');
+    final uri = Uri.parse("$apiServer/WorkLog/ByPaySlip/$paySlipId");
+    final response = await http.get(
+      uri,
+      headers: {"Authorization": "Bearer $accessToken"},
+    );
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final List<dynamic> requestData = data['data'];
+      return requestData
+          .map((data) => WorkLog.fromJson(data))
+          .toList()
+          .cast<WorkLog>();
+    }
+
+    return [];
   }
 }

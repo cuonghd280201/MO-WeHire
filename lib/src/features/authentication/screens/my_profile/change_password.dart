@@ -43,14 +43,6 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                     context, UserProfileScreen.routeName);
               },
             ),
-            bottom: PreferredSize(
-              preferredSize:
-                  const Size.fromHeight(1.0), // Height of the Divider
-              child: Divider(
-                thickness: 0.4,
-                color: Colors.grey[200], // Màu của đường kẻ
-              ),
-            ),
           ),
           backgroundColor: const Color(0xFFffffff),
           body: SingleChildScrollView(

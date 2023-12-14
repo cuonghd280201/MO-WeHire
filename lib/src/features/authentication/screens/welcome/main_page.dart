@@ -8,6 +8,7 @@ import 'package:we_hire/src/features/authentication/repository/request_repositor
 import 'package:we_hire/src/features/authentication/screens/my_profile/setting_dev.dart';
 import 'package:we_hire/src/features/authentication/screens/notification/dev_notification.dart';
 import 'package:badges/badges.dart' as badges;
+import 'package:we_hire/src/features/authentication/screens/project/list_project_dev.dart';
 
 import '../../../../common_widget/from_home_widget/form_category_widget.dart';
 
@@ -30,7 +31,6 @@ class _MainHomePageState extends State<MainHomePage> {
     const CategoriesWidget(),
     const NotificationDevPage(),
     const SettingProfileDevPage(),
-    // const UserProfileScreen(),
   ];
 
   @override

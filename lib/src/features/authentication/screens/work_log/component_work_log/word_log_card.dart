@@ -1,21 +1,23 @@
-// ignore_for_file: library_private_types_in_public_api
-
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:we_hire/src/common_widget/request_page.dart';
 import 'package:we_hire/src/constants/colors.dart';
-import 'package:we_hire/src/features/authentication/models/project.dart';
-import 'package:we_hire/src/features/authentication/screens/project/component/project_detail.dart';
 
-class ProjectCard extends StatefulWidget {
-  final Project? project;
+import 'package:we_hire/src/features/authentication/models/new_request.dart';
+import 'package:we_hire/src/features/authentication/models/payslip.dart';
+import 'package:we_hire/src/features/authentication/models/worklog.dart';
 
-  const ProjectCard({Key? key, required this.project}) : super(key: key);
+class WorkLogCard extends StatefulWidget {
+  final WorkLog? workLog;
+
+  const WorkLogCard({Key? key, required this.workLog}) : super(key: key);
 
   @override
-  _ProjectCardState createState() => _ProjectCardState();
+  _WorkLogCardState createState() => _WorkLogCardState();
 }
 
-class _ProjectCardState extends State<ProjectCard>
+class _WorkLogCardState extends State<WorkLogCard>
     with SingleTickerProviderStateMixin {
   late AnimationController animationController;
 
@@ -33,22 +35,22 @@ class _ProjectCardState extends State<ProjectCard>
     super.dispose();
   }
 
-  void viewYard() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => ProjectPageDetail(
-          widget.project!.projectId,
-          key: Key('${widget.project?.projectId}'),
-        ),
-      ),
-    );
-  }
+  // void viewYard() {
+  //   Navigator.of(context).push(
+  //     MaterialPageRoute(
+  //       builder: (context) => RequestPageDetail(
+  //         widget.hiringNew!.requestId,
+  //         key: Key('${widget.hiringNew?.requestId}'),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget onImageLoading(context, Widget child, ImageChunkEvent? progress) {
     if (progress == null) return child;
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: const EdgeInsets.all(40),
         child: CircularProgressIndicator(
             value: progress.expectedTotalBytes != null
                 ? progress.cumulativeBytesLoaded / progress.expectedTotalBytes!
@@ -64,10 +66,10 @@ class _ProjectCardState extends State<ProjectCard>
       scale: CurvedAnimation(
           parent: animationController, curve: Curves.easeInToLinear),
       child: Container(
-        margin: const EdgeInsets.only(right: 8),
+        margin: const EdgeInsets.only(right: 10, left: 10),
         width: cardWidth,
         child: InkWell(
-          onTap: viewYard,
+          //  onTap: viewYard,
           child: Stack(
             children: <Widget>[
               buildInfoCard(context, cardWidth),
@@ -100,8 +102,8 @@ class _ProjectCardState extends State<ProjectCard>
                     flex: 2,
                     child: Container(
                       child: Text(
-                        '${widget.project?.projectCode}',
-                        style: const TextStyle(
+                        '${widget.workLog?.workDateMMM}',
+                        style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
@@ -122,11 +124,13 @@ class _ProjectCardState extends State<ProjectCard>
                       child: Align(
                         alignment: Alignment.center,
                         child: Text(
-                          '${widget.project?.startDate}',
-                          style: const TextStyle(
+                          widget.workLog?.isPaidLeave == null
+                              ? 'Completion'
+                              : 'Time Off',
+                          style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
-                            color: Color.fromARGB(255, 249, 246, 246),
+                            color: const Color.fromARGB(255, 249, 246, 246),
                           ),
                         ),
                       ),
@@ -137,10 +141,10 @@ class _ProjectCardState extends State<ProjectCard>
               const SizedBox(height: 8),
               Row(
                 children: [
-                  SizedBox(
+                  Container(
                     width: MediaQuery.of(context).size.width / 3,
-                    child: const Text(
-                      "Project Name :",
+                    child: Text(
+                      "Time In :",
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
@@ -148,10 +152,10 @@ class _ProjectCardState extends State<ProjectCard>
                       ),
                     ),
                   ),
-                  SizedBox(
+                  Container(
                     width: MediaQuery.of(context).size.width / 3,
                     child: Text(
-                      '${widget.project?.projectName}',
+                      '${widget.workLog?.timeIn}',
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
                   ),
@@ -160,10 +164,10 @@ class _ProjectCardState extends State<ProjectCard>
               const SizedBox(height: 8),
               Row(
                 children: [
-                  SizedBox(
+                  Container(
                     width: MediaQuery.of(context).size.width / 3,
-                    child: const Text(
-                      "Company Name :",
+                    child: Text(
+                      "Time Out :",
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
@@ -171,24 +175,24 @@ class _ProjectCardState extends State<ProjectCard>
                       ),
                     ),
                   ),
-                  SizedBox(
+                  Container(
                     width: MediaQuery.of(context).size.width / 3,
                     child: Text(
-                      '${widget.project?.companyName}',
+                      '${widget.workLog?.timeOut}',
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(
+              SizedBox(
                 height: 10,
               ),
               Row(
                 children: [
-                  SizedBox(
+                  Container(
                     width: MediaQuery.of(context).size.width / 3,
-                    child: const Text(
-                      "Posted Time :",
+                    child: Text(
+                      "Hour Work In Day :",
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
@@ -196,10 +200,10 @@ class _ProjectCardState extends State<ProjectCard>
                       ),
                     ),
                   ),
-                  SizedBox(
+                  Container(
                     width: MediaQuery.of(context).size.width / 3,
                     child: Text(
-                      '${widget.project?.postedTime}',
+                      '${widget.workLog?.hourWorkInDay}',
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
                   ),

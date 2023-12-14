@@ -5,12 +5,12 @@ class ProjectController {
   final Repository _repository;
 
   ProjectController(this._repository);
-  Future<List<Project>> fetchProjectList(String? devStatusInProject) async {
+  Future<List<Project>> fetchProjectList(List<int> devStatusInProject) async {
     return _repository.getProject(devStatusInProject);
   }
 
   Future<List<Project>> searchProject(
-      int? devId, String? devStatusInProject, String? searchKeyString) async {
+      int? devId, List<int> devStatusInProject, String? searchKeyString) async {
     return _repository.searchProject(
         devId, devStatusInProject, searchKeyString);
   }

@@ -357,8 +357,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 toastLength: Toast.LENGTH_SHORT,
                                 gravity: ToastGravity.BOTTOM,
                                 timeInSecForIosWeb: 1,
-                                backgroundColor:
-                                    const Color.fromARGB(255, 0, 255, 115),
+                                backgroundColor: tBottomNavigation,
                                 textColor: const Color.fromARGB(255, 0, 0, 0),
                                 fontSize: 16.0,
                               );
@@ -387,8 +386,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               toastLength: Toast.LENGTH_SHORT,
                               gravity: ToastGravity.BOTTOM,
                               timeInSecForIosWeb: 1,
-                              backgroundColor:
-                                  const Color.fromARGB(255, 255, 0, 0),
+                              backgroundColor: Colors.yellowAccent,
                               textColor: const Color.fromARGB(255, 0, 0, 0),
                               fontSize: 16.0,
                             );

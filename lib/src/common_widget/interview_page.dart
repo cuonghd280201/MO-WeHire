@@ -50,16 +50,17 @@ class _InterviewPageState extends State<InterviewPageCard>
     double cardWidth = MediaQuery.of(context).size.width * 1;
     return ScaleTransition(
       scale: CurvedAnimation(
-          parent: animationController, curve: Curves.easeInToLinear),
+        parent: animationController,
+        curve: Curves.easeInToLinear,
+      ),
       child: Container(
-        margin: const EdgeInsets.only(right: 10, left: 10),
+        margin: const EdgeInsets.only(right: 8, left: 8),
         width: cardWidth,
         child: InkWell(
           onTap: viewYard,
           child: Stack(
             children: <Widget>[
               buildInfoCard(context, cardWidth),
-              //buildImageCard(cardWidth),
             ],
           ),
         ),
@@ -71,131 +72,134 @@ class _InterviewPageState extends State<InterviewPageCard>
     return SizedBox(
       width: cardWidth,
       child: Card(
-        elevation: 3,
+        elevation: 1,
         shape: RoundedRectangleBorder(
-          borderRadius:
-              BorderRadius.circular(12.0), // Adjust the radius as needed
+          borderRadius: BorderRadius.circular(12.0),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Row(
-                children: [
-                  Expanded(
-                    flex: 2,
-                    child: Text(
-                      '${widget.interview?.title}',
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+          padding: const EdgeInsets.all(20.0),
+          child: SizedBox(
+            width: cardWidth,
+            child: Row(
+              children: [
+                Container(
+                  width: 5,
+                  height: 70,
+                  decoration: BoxDecoration(
+                    color: tBottomNavigation,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(10),
+                      bottomLeft: Radius.circular(10),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                Flexible(
+                  fit: FlexFit.loose,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Row(
+                        children: [
+                          Expanded(
+                            flex: 2,
+                            child: Text(
+                              '${widget.interview?.title}',
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: tPrimaryColor,
+                                border: Border.all(color: tPrimaryColor),
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              padding: const EdgeInsets.all(2.0),
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: Text(
+                                  '${widget.interview?.statusString}',
+                                  style: const TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: tPrimaryColor,
-                        border: Border.all(
-                            color:
-                                tPrimaryColor), // Add a border around duration
-                        borderRadius: BorderRadius.circular(
-                            8.0), // Add border radius if desired
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          SizedBox(
+                            width: cardWidth / 3,
+                            child: const Text(
+                              "Date Of Interview",
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: tBottomNavigation,
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            width: cardWidth / 3,
+                            child: Text(
+                              '${widget.interview?.dateOfInterview}',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                            ),
+                          ),
+                        ],
                       ),
-                      padding: const EdgeInsets.all(2.0),
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: Text(
-                          '${widget.interview?.statusString}',
-                          style: const TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white),
-                        ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          SizedBox(
+                            width: cardWidth / 3,
+                            child: const Text(
+                              "Start- End Time:",
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: tBottomNavigation,
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            width: cardWidth / 3,
+                            child: Text(
+                              '${widget.interview?.startTime} - ${widget.interview?.endTime}',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
+                    ],
                   ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width / 3,
-                    child: const Text(
-                      "Date Of Interview",
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: tBottomNavigation,
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width / 3,
-                    child: Text(
-                      '${widget.interview?.dateOfInterview}',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.bold, color: Colors.black),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width / 3,
-                    child: const Text(
-                      "Start- End Time:",
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: tBottomNavigation,
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width / 3,
-                    child: Text(
-                      '${widget.interview?.startTime} - ${widget.interview?.endTime}',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.bold, color: Colors.black),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              // Row(
-              //   children: [
-              //     Container(
-              //       width: MediaQuery.of(context).size.width / 3,
-              //       child: Text(
-              //         "Type Employment :",
-              //         style: TextStyle(
-              //           fontSize: 15,
-              //           fontWeight: FontWeight.bold,
-              //           color: tBottomNavigation,
-              //         ),
-              //       ),
-              //     ),
-              //     Container(
-              //       width: MediaQuery.of(context).size.width / 3,
-              //       child: Text(
-              //         '${widget.interview?.statusString}',
-              //         style: TextStyle(
-              //           fontSize: 15,
-              //           color: Colors.black,
-              //         ),
-              //       ),
-              //     ),
-              //   ],
-              // ),
-            ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -9,10 +9,7 @@ import 'package:we_hire/src/features/authentication/repository/request_repositor
 import 'package:we_hire/src/features/authentication/screens/login/test_login.dart';
 import 'package:we_hire/src/features/authentication/screens/my_profile/change_password.dart';
 import 'package:we_hire/src/features/authentication/screens/my_profile/edit_dev_profile.dart';
-import 'package:we_hire/src/features/authentication/screens/my_profile/list_education_page.dart';
-import 'package:we_hire/src/features/authentication/screens/my_profile/list_professtional_experience.dart';
 import 'package:we_hire/src/features/authentication/screens/my_profile/setting_dev.dart';
-import 'package:we_hire/src/features/authentication/screens/welcome/main_page.dart';
 
 class UserProfileScreen extends StatefulWidget {
   const UserProfileScreen({super.key});
@@ -70,31 +67,12 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 context, SettingProfileDevPage.routeName);
           },
         ),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1.0), // Height of the Divider
-          child: Divider(
-            thickness: 0.4,
-            color: Colors.grey[200], // Màu của đường kẻ
-          ),
-        ),
         actions: [
           PopupMenuButton(
               onSelected: (item) => onSelected(context, item),
               itemBuilder: (context) => [
                     const PopupMenuItem<int>(
                         value: 0, child: Text('Change Password')),
-                    const PopupMenuItem<int>(
-                        value: 1,
-                        child: Row(children: [
-                          Icon(
-                            Icons.logout,
-                            color: tBottomNavigation,
-                          ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          Text('Sign Out'),
-                        ])),
                   ])
         ],
       ),

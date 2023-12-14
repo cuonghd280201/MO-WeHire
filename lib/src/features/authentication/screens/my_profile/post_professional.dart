@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
+import 'package:motion_toast/motion_toast.dart';
 import 'package:we_hire/src/constants/colors.dart';
 import 'package:we_hire/src/features/authentication/controllers/developer_controller.dart';
 import 'package:we_hire/src/features/authentication/repository/request_repository.dart';
@@ -275,15 +276,10 @@ class _PostProfessionalPageState extends State<PostProfessionalPage> {
                   );
 
                   if (success) {
-                    Fluttertoast.showToast(
-                      msg: "Professional Posted Successfully.",
-                      toastLength: Toast.LENGTH_SHORT,
-                      gravity: ToastGravity.BOTTOM,
-                      timeInSecForIosWeb: 1,
-                      backgroundColor: Colors.greenAccent,
-                      textColor: Colors.white,
-                      fontSize: 16.0,
-                    );
+                    MotionToast.success(
+                      description: const Text(
+                          "Has successfully created professional experience"),
+                    ).show(context);
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -302,16 +298,10 @@ class _PostProfessionalPageState extends State<PostProfessionalPage> {
                   }
                 } catch (e) {
                   print("Error: $e");
-                  Fluttertoast.showToast(
-                    //msg: "An error occurred: $e",
-                    msg: "Failed to post professional.",
-                    toastLength: Toast.LENGTH_SHORT,
-                    gravity: ToastGravity.BOTTOM,
-                    timeInSecForIosWeb: 1,
-                    backgroundColor: Color.fromARGB(255, 0, 255, 174),
-                    textColor: const Color.fromARGB(255, 0, 0, 0),
-                    fontSize: 16.0,
-                  );
+                  MotionToast.warning(
+                    description:
+                        const Text("You cannot create professional experience"),
+                  ).show(context);
                 }
               },
               elevation: 5.0,

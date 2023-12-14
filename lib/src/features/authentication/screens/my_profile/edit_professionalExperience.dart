@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
+import 'package:motion_toast/motion_toast.dart';
 import 'package:we_hire/src/constants/colors.dart';
 import 'package:we_hire/src/features/authentication/controllers/developer_controller.dart';
 import 'package:we_hire/src/features/authentication/models/professtional_experience.dart';
@@ -275,15 +276,10 @@ class _EditProfessionalPageState extends State<EditProfessionalPage> {
                     endDate,
                     description);
                 Navigator.of(context).pop();
-                Fluttertoast.showToast(
-                  msg: "Update professional experrences successfully.",
-                  toastLength: Toast.LENGTH_SHORT,
-                  gravity: ToastGravity.BOTTOM,
-                  timeInSecForIosWeb: 1,
-                  backgroundColor: tBottomNavigation,
-                  textColor: const Color.fromARGB(255, 0, 0, 0),
-                  fontSize: 16.0,
-                );
+                MotionToast.success(
+                  description: const Text(
+                      "Has successfully update professional experience"),
+                ).show(context);
                 Navigator.push(
                   context,
                   MaterialPageRoute(

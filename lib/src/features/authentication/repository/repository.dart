@@ -2,18 +2,20 @@ import 'package:we_hire/src/features/authentication/models/education.dart';
 import 'package:we_hire/src/features/authentication/models/interview.dart';
 import 'package:we_hire/src/features/authentication/models/new_request.dart';
 import 'package:we_hire/src/features/authentication/models/notification.dart';
+import 'package:we_hire/src/features/authentication/models/payslip.dart';
 import 'package:we_hire/src/features/authentication/models/professtional_experience.dart';
 import 'package:we_hire/src/features/authentication/models/project.dart';
 import 'package:we_hire/src/features/authentication/models/user.dart';
+import 'package:we_hire/src/features/authentication/models/worklog.dart';
 
 abstract class Repository {
   Future<void> SignIn(String email, String password);
   Future<List<HiringNew>> getHiring();
   Future<List<HiringNew>> searchHiring(String? searchKeyString);
 
-  Future<List<Project>> getProject(String? devStatusInProject);
+  Future<List<Project>> getProject(List<int> devStatusInProject);
   Future<List<Project>> searchProject(
-      int? devId, String? devStatusInProject, String? searchKeyString);
+      int? devId, List<int> devStatusInProject, String? searchKeyString);
 
   Future<HiringNew> getHiringById(int? requestId);
   Future<bool> sendupdateHiringData(int? requestId);
@@ -26,6 +28,8 @@ abstract class Repository {
   Future<User> getDeveloperById();
   Future<Education> getEducationById();
   Future<Project> getProjectById(int? projectId);
+  Future<List<PaySlip>> getPaySlipByProjectId(int? projectId);
+  Future<List<WorkLog>> getWorkLogByPaySlipId(int? paySlipId);
   Future<bool> editEducation(
       int? educationId,
       String? majorName,

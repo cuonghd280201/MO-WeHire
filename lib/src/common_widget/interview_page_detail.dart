@@ -7,7 +7,7 @@ import 'package:we_hire/src/features/authentication/controllers/interview_contro
 import 'package:we_hire/src/features/authentication/models/interview.dart';
 import 'package:we_hire/src/features/authentication/repository/request_repository.dart';
 import 'package:we_hire/src/features/authentication/screens/interview/list_interview_dev_receive.dart';
-import 'package:we_hire/src/features/authentication/screens/welcome/main_page.dart';
+import 'package:motion_toast/motion_toast.dart';
 
 class InterviewPageDetail extends StatefulWidget {
   final int? interviewId;
@@ -70,7 +70,7 @@ class _InterviewPageDetailState extends State<InterviewPageDetail> {
           Expanded(
             child: SingleChildScrollView(
               child: Container(
-                padding: const EdgeInsets.all(30),
+                padding: const EdgeInsets.all(35),
                 decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.all(Radius.circular(30)),
@@ -103,7 +103,7 @@ class _InterviewPageDetailState extends State<InterviewPageDetail> {
                             Text(
                               '${interviewList?.title}',
                               style: const TextStyle(
-                                fontSize: 15,
+                                fontSize: 20,
                                 color: Colors.black,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -140,28 +140,25 @@ class _InterviewPageDetailState extends State<InterviewPageDetail> {
                       height: 20,
                     ),
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width / 3,
-                          child: const Text(
+                        const SizedBox(
+                          child: Text(
                             "Title",
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.bold,
-                              color: tBottomNavigation,
+                              color: Colors.black,
                             ),
                           ),
                         ),
                         SizedBox(
-                          width: MediaQuery.of(context).size.width / 2,
                           child: Text(
                             '${interviewList?.title}',
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyMedium
-                                ?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black),
+                                ?.copyWith(color: Colors.black),
                           ),
                         ),
                       ],
@@ -170,28 +167,25 @@ class _InterviewPageDetailState extends State<InterviewPageDetail> {
                       height: 20,
                     ),
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width / 3,
-                          child: const Text(
+                        const SizedBox(
+                          child: Text(
                             "Date of Interview",
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.bold,
-                              color: tBottomNavigation,
+                              color: Colors.black,
                             ),
                           ),
                         ),
                         SizedBox(
-                          width: MediaQuery.of(context).size.width / 2,
                           child: Text(
                             '${interviewList?.dateOfInterview}',
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyMedium
-                                ?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black),
+                                ?.copyWith(color: Colors.black),
                           ),
                         ),
                       ],
@@ -200,28 +194,25 @@ class _InterviewPageDetailState extends State<InterviewPageDetail> {
                       height: 20,
                     ),
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width / 3,
-                          child: const Text(
+                        const SizedBox(
+                          child: Text(
                             "Start - End Time",
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.bold,
-                              color: tBottomNavigation,
+                              color: Colors.black,
                             ),
                           ),
                         ),
                         SizedBox(
-                          width: MediaQuery.of(context).size.width / 3,
                           child: Text(
                             '${interviewList?.startTime} - ${interviewList?.endTime}',
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyMedium
-                                ?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black),
+                                ?.copyWith(color: Colors.black),
                           ),
                         ),
                       ],
@@ -230,28 +221,25 @@ class _InterviewPageDetailState extends State<InterviewPageDetail> {
                       height: 20,
                     ),
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width / 3,
-                          child: const Text(
+                        const SizedBox(
+                          child: Text(
                             "Number Of Interview",
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.bold,
-                              color: tBottomNavigation,
+                              color: Colors.black,
                             ),
                           ),
                         ),
                         SizedBox(
-                          width: MediaQuery.of(context).size.width / 3,
                           child: Text(
                             '${interviewList?.numOfInterviewee}',
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyMedium
-                                ?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black),
+                                ?.copyWith(color: Colors.black),
                           ),
                         ),
                       ],
@@ -260,28 +248,25 @@ class _InterviewPageDetailState extends State<InterviewPageDetail> {
                       height: 20,
                     ),
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         SizedBox(
-                          width: MediaQuery.of(context).size.width / 3,
                           child: const Text(
                             "Post Time",
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.bold,
-                              color: tBottomNavigation,
+                              color: Colors.black,
                             ),
                           ),
                         ),
                         SizedBox(
-                          width: MediaQuery.of(context).size.width / 3,
                           child: Text(
                             '${interviewList?.postedTime}',
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyMedium
-                                ?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black),
+                                ?.copyWith(color: Colors.black),
                           ),
                         ),
                       ],
@@ -294,7 +279,7 @@ class _InterviewPageDetailState extends State<InterviewPageDetail> {
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
-                        color: tBottomNavigation,
+                        color: Colors.black,
                       ),
                     ),
                     const SizedBox(
@@ -329,39 +314,26 @@ class _InterviewPageDetailState extends State<InterviewPageDetail> {
                       height: 20,
                     ),
                     if (interviewList?.statusString == "Approved")
-                      Column(
-                        children: [
-                          Row(
-                            children: [
-                              SizedBox(
-                                width: MediaQuery.of(context).size.width / 3,
-                                child: const Text(
-                                  "Link Meet",
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold,
-                                    color: tBottomNavigation,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                width: MediaQuery.of(context).size.width / 3,
-                                child: Text(
-                                  '${interviewList?.meetingLink}',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyMedium
-                                      ?.copyWith(
-                                        decoration: TextDecoration.underline,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                      ),
-                                ),
-                              ),
-                            ],
+                      SizedBox(
+                        child: const Text(
+                          "Link Meet",
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
                           ),
-                        ],
+                        ),
                       ),
+                    SizedBox(
+                      child: Text(
+                        '${interviewList?.meetingLink}',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              decoration: TextDecoration.underline,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blueAccent,
+                            ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -387,7 +359,7 @@ class _InterviewPageDetailState extends State<InterviewPageDetail> {
                             borderRadius: BorderRadius.circular(10),
                           ),
                           minimumSize:
-                              Size(150, 40), // Adjust the width as needed
+                              const Size(150, 40), // Adjust the width as needed
                         ),
                         onPressed: () {
                           showDialog(
@@ -433,18 +405,11 @@ class _InterviewPageDetailState extends State<InterviewPageDetail> {
                                         });
 
                                         Navigator.of(context).pop();
-                                        Fluttertoast.showToast(
-                                          msg:
-                                              "Approved Interview Successfully.",
-                                          toastLength: Toast.LENGTH_SHORT,
-                                          gravity: ToastGravity.BOTTOM,
-                                          timeInSecForIosWeb: 1,
-                                          backgroundColor: const Color.fromARGB(
-                                              255, 0, 255, 115),
-                                          textColor: const Color.fromARGB(
-                                              255, 0, 0, 0),
-                                          fontSize: 16.0,
-                                        );
+                                        // ignore: use_build_context_synchronously
+                                        MotionToast.success(
+                                          description: const Text(
+                                              "Successful interview approval"),
+                                        ).show(context);
                                       }
                                     },
                                   ),
@@ -474,7 +439,7 @@ class _InterviewPageDetailState extends State<InterviewPageDetail> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          minimumSize: Size(150, 40),
+                          minimumSize: const Size(150, 40),
                         ),
                         onPressed: () {
                           showDialog(
@@ -518,23 +483,28 @@ class _InterviewPageDetailState extends State<InterviewPageDetail> {
                                       style:
                                           TextStyle(color: tBottomNavigation),
                                     ),
-                                    onPressed: () {
+                                    onPressed: () async {
                                       String reason = reasonController.text;
-                                      interview.rejectInterview(
-                                          interviewList!.interviewId, reason);
-                                      Navigator.of(context).pop();
-                                      Fluttertoast.showToast(
-                                        msg: "Rejected Interview Succesfully.",
-                                        toastLength: Toast.LENGTH_SHORT,
-                                        gravity: ToastGravity.BOTTOM,
-                                        timeInSecForIosWeb: 1,
-                                        backgroundColor: const Color.fromARGB(
-                                            255, 0, 255, 115),
-                                        textColor:
-                                            const Color.fromARGB(255, 0, 0, 0),
-                                        fontSize: 16.0,
-                                      );
-                                      fetchData();
+                                      final rejectSuccess =
+                                          await interview.rejectInterview(
+                                              interviewList!.interviewId,
+                                              reason);
+
+                                      if (rejectSuccess) {
+                                        final updatedInterview =
+                                            await interviewController
+                                                .fetchInterviewById(
+                                                    widget.interviewId);
+
+                                        setState(() {
+                                          interviewList = updatedInterview;
+                                        });
+                                        Navigator.of(context).pop();
+                                        MotionToast.success(
+                                          description: const Text(
+                                              "Successful interview reject"),
+                                        ).show(context);
+                                      }
                                     },
                                   ),
                                 ],

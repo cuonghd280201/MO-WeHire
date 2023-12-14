@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
+import 'package:motion_toast/motion_toast.dart';
 import 'package:we_hire/src/constants/colors.dart';
 import 'package:we_hire/src/features/authentication/controllers/developer_controller.dart';
 import 'package:we_hire/src/features/authentication/repository/request_repository.dart';
@@ -276,74 +277,6 @@ class _PostEducationPageState extends State<PostEducationPage> {
               },
             ),
           ),
-          // Padding(
-          //   padding: const EdgeInsets.symmetric(horizontal: 22),
-          //   child: Column(
-          //     crossAxisAlignment: CrossAxisAlignment.start,
-          //     children: [
-          //       SizedBox(
-          //         height: 10,
-          //       ),
-          //       const Text(
-          //         'Gender',
-          //         style: TextStyle(
-          //           color: Colors.black,
-          //           fontSize: 15.0,
-          //           fontWeight: FontWeight.bold,
-          //         ),
-          //       ),
-          //       SizedBox(
-          //         height: 10.0,
-          //       ),
-          //       Row(
-          //         children: [
-          //           Flexible(
-          //               fit: FlexFit.loose,
-          //               child: RadioListTile(
-          //                 contentPadding: EdgeInsets.zero,
-          //                 groupValue: genderSelected,
-          //                 activeColor: Colors.black,
-          //                 title: const Text(
-          //                   "MALE",
-          //                   style: TextStyle(
-          //                     fontSize: 14,
-          //                     color: Colors.black,
-          //                   ),
-          //                 ),
-          //                 value: 'male',
-          //                 onChanged: (value) {
-          //                   setState(() {
-          //                     genderSelected = value.toString();
-          //                   });
-          //                   print(genderSelected);
-          //                 },
-          //               )),
-          //           Flexible(
-          //               fit: FlexFit.loose,
-          //               child: RadioListTile(
-          //                 contentPadding: EdgeInsets.zero,
-          //                 groupValue: genderSelected,
-          //                 activeColor: Colors.black,
-          //                 title: const Text(
-          //                   "FEMALE",
-          //                   style: TextStyle(
-          //                     fontSize: 14,
-          //                     color: Colors.black,
-          //                   ),
-          //                 ),
-          //                 value: 'female',
-          //                 onChanged: (value) {
-          //                   setState(() {
-          //                     genderSelected = value.toString();
-          //                   });
-          //                   print(genderSelected);
-          //                 },
-          //               ))
-          //         ],
-          //       )
-          //     ],
-          //   ),
-          // ),
           const SizedBox(
             height: 25,
           ),
@@ -367,15 +300,10 @@ class _PostEducationPageState extends State<PostEducationPage> {
                   );
 
                   if (success) {
-                    Fluttertoast.showToast(
-                      msg: "Education Created Successfully.",
-                      toastLength: Toast.LENGTH_SHORT,
-                      gravity: ToastGravity.BOTTOM,
-                      timeInSecForIosWeb: 1,
-                      backgroundColor: Colors.greenAccent,
-                      textColor: Colors.white,
-                      fontSize: 16.0,
-                    );
+                    MotionToast.success(
+                      description:
+                          const Text("Has successfully created education"),
+                    ).show(context);
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -393,16 +321,9 @@ class _PostEducationPageState extends State<PostEducationPage> {
                     );
                   }
                 } catch (e) {
-                  Fluttertoast.showToast(
-                    // msg: "An error occurred: $e",
-                    msg: "Failed to created education.",
-                    toastLength: Toast.LENGTH_SHORT,
-                    gravity: ToastGravity.BOTTOM,
-                    timeInSecForIosWeb: 1,
-                    backgroundColor: const Color.fromARGB(255, 255, 0, 0),
-                    textColor: const Color.fromARGB(255, 0, 0, 0),
-                    fontSize: 16.0,
-                  );
+                  MotionToast.warning(
+                    description: const Text("You cannot create education"),
+                  ).show(context);
                 }
               },
               elevation: 5.0,

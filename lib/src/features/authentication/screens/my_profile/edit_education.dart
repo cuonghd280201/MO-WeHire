@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
+import 'package:motion_toast/motion_toast.dart';
 import 'package:we_hire/src/constants/colors.dart';
 import 'package:we_hire/src/features/authentication/controllers/developer_controller.dart';
 import 'package:we_hire/src/features/authentication/models/education.dart';
@@ -56,8 +57,11 @@ class _EditEducationPageState extends State<EditEducationPage> {
           icon: const Icon(Icons.arrow_back_ios_new_outlined),
           color: Colors.white,
           onPressed: () {
-            Navigator.pushReplacementNamed(
-                context, ListEducationPage.routeName);
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const ListEducationPage(),
+              ),
+            );
           },
         ),
       ),
@@ -300,15 +304,9 @@ class _EditEducationPageState extends State<EditEducationPage> {
                     builder: (context) => const ListEducationPage(),
                   ),
                 );
-                Fluttertoast.showToast(
-                  msg: "Update education successfully.",
-                  toastLength: Toast.LENGTH_SHORT,
-                  gravity: ToastGravity.BOTTOM,
-                  timeInSecForIosWeb: 1,
-                  backgroundColor: const Color.fromARGB(255, 0, 255, 115),
-                  textColor: const Color.fromARGB(255, 0, 0, 0),
-                  fontSize: 16.0,
-                );
+                MotionToast.success(
+                  description: const Text("Has successfully updated education"),
+                ).show(context);
               },
               elevation: 5.0,
               child: Container(

@@ -10,7 +10,9 @@ import 'package:we_hire/src/features/authentication/screens/project/component/pr
 import 'package:we_hire/src/features/authentication/screens/welcome/main_page.dart';
 
 class ListProjectDev extends StatefulWidget {
-  const ListProjectDev({super.key});
+  final int? devStatusInProject;
+
+  const ListProjectDev({super.key, this.devStatusInProject});
 
   @override
   _ListProjectDevState createState() => _ListProjectDevState();
@@ -20,6 +22,8 @@ class ListProjectDev extends StatefulWidget {
 class _ListProjectDevState extends State<ListProjectDev> {
   var projectController = ProjectController(RequestRepository());
   String searchQuery = '';
+  List<int> projectListFilter = [8, 9, 10, 11];
+
   TextEditingController searchController = TextEditingController();
   void _onSearchChanged(String value) {
     setState(() {
@@ -29,7 +33,7 @@ class _ListProjectDevState extends State<ListProjectDev> {
   }
 
   void _searchProjects() {
-    projectController.searchProject(null, '1', searchQuery);
+    projectController.searchProject(null, [8, 9, 10, 11], searchQuery);
   }
 
   void _clearSearch() {
@@ -84,9 +88,12 @@ class _ListProjectDevState extends State<ListProjectDev> {
                   const SizedBox(
                     height: 15,
                   ),
-                  SizedBox(
+                  Container(
                     width: MediaQuery.of(context).size.width * 1,
                     height: 50,
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20)),
                     child: TextField(
                       controller: searchController,
                       onChanged: _onSearchChanged,
@@ -104,7 +111,7 @@ class _ListProjectDevState extends State<ListProjectDev> {
                           color: tBottomNavigation,
                         ),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(10),
                         ),
                       ),
                     ),
@@ -125,10 +132,10 @@ class _ListProjectDevState extends State<ListProjectDev> {
   Widget buildStaticYardList() {
     return FutureBuilder<List<Project>>(
       future: searchQuery.isEmpty
-          ? projectController
-              .fetchProjectList('1') // Fetch all projects when no search query
+          ? projectController.fetchProjectList(
+              [8, 9, 10, 11]) // Fetch all projects when no search query
           : projectController.searchProject(
-              null, '1', searchQuery), // Use searched projects
+              null, [8, 9, 10, 11], searchQuery), // Use searched projects
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
@@ -164,8 +171,8 @@ class _ListProjectDevState extends State<ListProjectDev> {
                       child: ClipOval(
                         child: Image.asset(
                           'assets/images/splash_images/interview.png',
-                          height: 300,
-                          width: 300,
+                          height: 100,
+                          width: 100,
                         ),
                       ),
                     );

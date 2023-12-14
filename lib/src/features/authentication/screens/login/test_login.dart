@@ -83,7 +83,7 @@ class _FormScreenState extends State<TestLoginScreen> {
               decoration: const InputDecoration(
                   prefixIcon: Icon(
                     Icons.email,
-                    color: tBottomNavigation,
+                    color: tHeader,
                   ),
                   labelText: 'E-Mail',
                   hintText: '@gmail.com',
@@ -113,11 +113,11 @@ class _FormScreenState extends State<TestLoginScreen> {
               obscureText: passToggle,
               decoration: InputDecoration(
                 prefixIcon: const Icon(
-                  Icons.password_rounded,
-                  color: tBottomNavigation,
+                  Icons.lock,
+                  color: tHeader,
                 ),
                 labelText: 'Password',
-                suffix: InkWell(
+                suffixIcon: InkWell(
                   onTap: () {
                     setState(() {
                       passToggle = !passToggle;
@@ -125,7 +125,7 @@ class _FormScreenState extends State<TestLoginScreen> {
                   },
                   child: Icon(
                     passToggle ? Icons.visibility : Icons.visibility_off,
-                    color: headerDashboard,
+                    color: tHeader,
                   ),
                 ),
                 focusedBorder: const OutlineInputBorder(
@@ -189,7 +189,7 @@ class _FormScreenState extends State<TestLoginScreen> {
                   backgroundColor: MaterialStateProperty.all<Color>(
                       tBottomNavigation), // Đổi màu ở đây
                 ),
-                child: const Text('Login'),
+                child: const Text('Log In'),
               ),
             ),
           ]),

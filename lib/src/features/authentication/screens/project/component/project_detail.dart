@@ -1,14 +1,15 @@
-// ignore_for_file: library_private_types_in_public_api
-
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:html_unescape/html_unescape.dart';
 import 'package:intl/intl.dart';
 import 'package:we_hire/src/constants/colors.dart';
+import 'package:we_hire/src/features/authentication/controllers/pay_slip_controller.dart';
 import 'package:we_hire/src/features/authentication/controllers/project_controller.dart';
+import 'package:we_hire/src/features/authentication/models/payslip.dart';
 import 'package:we_hire/src/features/authentication/models/project.dart';
 import 'package:we_hire/src/features/authentication/repository/request_repository.dart';
-//import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:we_hire/src/features/authentication/screens/pay_slip/component_pay_slip/pay_slip_card.dart';
+import 'package:we_hire/src/features/authentication/screens/project/list_project_dev.dart';
 
 class ProjectPageDetail extends StatefulWidget {
   static const String routeName = "/projectDetail";
@@ -22,51 +23,110 @@ class ProjectPageDetail extends StatefulWidget {
 }
 
 class _ProjectPageDetailState extends State<ProjectPageDetail> {
-  final projectController = ProjectController(RequestRepository());
+  final ProjectController _projectController =
+      ProjectController(RequestRepository());
+  final paySlipControler = PaySlipController(RequestRepository());
+
+  late PageController _pageController;
+  int _currentPageIndex = 0;
   Project? projectNew;
-  @override
-  bool mounted = false;
 
   @override
   void initState() {
     super.initState();
-    mounted = true;
+    _pageController = PageController(); // Initialize _pageController here
     fetchData();
   }
 
   @override
   void dispose() {
-    mounted = false;
+    _pageController
+        .dispose(); // Dispose of _pageController when the widget is disposed
     super.dispose();
   }
 
   Future<void> fetchData() async {
-    final project = await projectController.fetchProjectById(widget.projectId);
-    if (mounted) {
-      setState(() {
-        projectNew = project;
-      });
+    try {
+      final project =
+          await _projectController.fetchProjectById(widget.projectId);
+      if (mounted) {
+        setState(() {
+          projectNew = project;
+        });
+      }
+    } catch (error) {
+      // Handle error appropriately
+      print("Error fetching project details: $error");
     }
   }
 
-  bool showFullDescription = false;
-  HtmlUnescape htmlUnescape = HtmlUnescape();
+  bool _showFullDescription = false;
+  final HtmlUnescape _htmlUnescape = HtmlUnescape();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
+    return DefaultTabController(
+      length: 2, // Number of tabs
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: tBottomNavigation,
+          title: const Text('Project Page'),
+          centerTitle: true,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios_new_outlined),
+            color: Colors.white,
+            onPressed: () {
+              Navigator.pushReplacementNamed(context, ListProjectDev.routeName);
+            },
+          ),
+          bottom: const TabBar(
+            tabs: [
+              Tab(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.description),
+                    Text('Details'),
+                  ],
+                ),
+              ),
+              Tab(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.attach_money),
+                    Text('PaySlip'),
+                  ],
+                ),
+              ),
+            ],
+            indicatorColor: Colors.white,
+          ),
+        ),
+        body: TabBarView(
+          children: [
+            buildProjectDetailPage(),
+            buildPaySlipListPage(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildProjectDetailPage() {
+    return Container(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Expanded(
             child: SingleChildScrollView(
               child: Container(
-                padding: const EdgeInsets.all(25),
+                padding: const EdgeInsets.all(30),
                 decoration: const BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.all(Radius.circular(30)),
+                  borderRadius: BorderRadius.all(Radius.circular(5)),
                 ),
-                height: 600,
+                height: 1000,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -80,7 +140,7 @@ class _ProjectPageDetailState extends State<ProjectPageDetail> {
                               width: 40,
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
+                                borderRadius: BorderRadius.circular(5),
                                 color: tBottomNavigation,
                               ),
                               child: const Icon(
@@ -89,7 +149,7 @@ class _ProjectPageDetailState extends State<ProjectPageDetail> {
                               ),
                             ),
                             const SizedBox(
-                              width: 10,
+                              width: 5,
                             ),
                             Text(
                               '${projectNew?.projectCode}',
@@ -98,186 +158,216 @@ class _ProjectPageDetailState extends State<ProjectPageDetail> {
                                 color: Colors.black,
                                 fontWeight: FontWeight.bold,
                               ),
-                            )
+                            ),
                           ],
                         ),
-                        Row(
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                color: tBottomNavigation,
-                                borderRadius: BorderRadius.circular(
-                                    20), // Optional: Set border radius
+                        Container(
+                          decoration: BoxDecoration(
+                            color: tBottomNavigation,
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Text(
+                              '${projectNew?.statusString}',
+                              style: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: Color.fromARGB(255, 249, 248, 248),
                               ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(
-                                    10.0), // Adjust the padding as needed
-                                child: Text(
-                                  '${projectNew?.statusString}',
-                                  style: const TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color.fromARGB(255, 249, 248, 248),
-                                  ),
-                                ),
-                              ),
-                            )
-                          ],
-                        )
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Row(
-                      children: [
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width / 3,
-                          child: const Text(
-                            "Project Name",
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                              color: tBottomNavigation,
                             ),
                           ),
                         ),
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width / 3,
-                          child: Text(
-                            '${projectNew?.projectName}',
-                            style: Theme.of(context).textTheme.bodyLarge,
-                          ),
-                        ),
                       ],
                     ),
                     const SizedBox(
-                      height: 20,
+                      height: 10,
                     ),
-                    Row(
-                      children: [
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width / 3,
-                          child: const Text(
-                            "Project Type Name",
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                              color: tBottomNavigation,
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width / 3,
-                          child: Text(
-                            '${projectNew?.projectTypeName}',
-                            style: Theme.of(context).textTheme.bodyLarge,
-                          ),
-                        ),
-                      ],
+                    const Text(
+                      "Project Name",
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: tBottomNavigation,
+                      ),
                     ),
                     const SizedBox(
-                      height: 20,
+                      height: 5,
                     ),
-                    Row(
-                      children: [
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width / 3,
-                          child: const Text(
-                            "Post Time",
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                              color: tBottomNavigation,
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width / 3,
-                          child: Text(
-                            '${projectNew?.postedTime}',
-                            style: Theme.of(context).textTheme.bodyLarge,
-                          ),
-                        ),
-                      ],
+                    Text(
+                      '${projectNew?.projectName}',
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(color: Colors.black),
                     ),
                     const SizedBox(
-                      height: 20,
+                      height: 5,
                     ),
-                    Row(
-                      children: [
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width / 3,
-                          child: const Text(
-                            "Company Name",
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                              color: tBottomNavigation,
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width / 2,
-                          child: Text(
-                            '${projectNew?.companyName}',
-                            style: Theme.of(context).textTheme.bodyLarge,
-                          ),
-                        ),
-                      ],
+                    SizedBox(
+                      width: double.infinity,
+                      child: Container(
+                        height: 0.2,
+                        color: Colors.black,
+                      ),
                     ),
                     const SizedBox(
-                      height: 20,
+                      height: 5,
                     ),
-                    Row(
-                      children: [
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width / 3,
-                          child: const Text(
-                            "Start Date",
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                              color: tBottomNavigation,
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width / 3,
-                          child: Text(
-                            '${projectNew?.startDate}',
-                            style: Theme.of(context).textTheme.bodyLarge,
-                          ),
-                        ),
-                      ],
+                    const Text(
+                      "Project Type Name",
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: tBottomNavigation,
+                      ),
                     ),
                     const SizedBox(
-                      height: 20,
+                      height: 5,
                     ),
-                    Row(
-                      children: [
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width / 3,
-                          child: const Text(
-                            "End Date",
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                              color: tBottomNavigation,
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width / 3,
-                          child: Text(
-                            '${projectNew?.endDate}',
-                            style: Theme.of(context).textTheme.bodyLarge,
-                          ),
-                        ),
-                      ],
+                    Text(
+                      '${projectNew?.projectTypeName}',
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(color: Colors.black),
                     ),
                     const SizedBox(
-                      height: 20,
+                      height: 5,
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: Container(
+                        height: 0.2,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    const Text(
+                      "Post Time",
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: tBottomNavigation,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    Text(
+                      '${projectNew?.postedTime}',
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(color: Colors.black),
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: Container(
+                        height: 0.2,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    const Text(
+                      "Company Name",
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: tBottomNavigation,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    Text(
+                      '${projectNew?.companyName}',
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(color: Colors.black),
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: Container(
+                        height: 0.2,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    const Text(
+                      "Start Date",
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: tBottomNavigation,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    Text(
+                      '${projectNew?.startDate}',
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(color: Colors.black),
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: Container(
+                        height: 0.2,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    const Text(
+                      "End Date",
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: tBottomNavigation,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    Text(
+                      '${projectNew?.endDate}',
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(color: Colors.black),
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: Container(
+                        height: 0.2,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 5,
                     ),
                     const Text(
                       'Job Description',
@@ -287,15 +377,12 @@ class _ProjectPageDetailState extends State<ProjectPageDetail> {
                         color: tBottomNavigation,
                       ),
                     ),
-                    const SizedBox(
-                      height: 10,
-                    ),
                     Html(
-                      data: showFullDescription
-                          ? '${htmlUnescape.convert(projectNew?.description ?? '')}'
-                          : (projectNew?.description?.length ?? 0) <= 100
-                              ? '${htmlUnescape.convert(projectNew?.description ?? '')}'
-                              : '${htmlUnescape.convert(projectNew?.description?.substring(0, 100) ?? '')}...', // Show the first 100 characters
+                      data: _showFullDescription
+                          ? '${_htmlUnescape.convert(projectNew?.description ?? '')}'
+                          : (projectNew?.description?.length ?? 0) <= 50
+                              ? '${_htmlUnescape.convert(projectNew?.description ?? '')}'
+                              : '${_htmlUnescape.convert(projectNew?.description?.substring(0, 50) ?? '')}...', // Show the first 50 characters
                       style: {
                         'body': Style(
                           fontSize: FontSize
@@ -305,15 +392,15 @@ class _ProjectPageDetailState extends State<ProjectPageDetail> {
                     ),
                     if (projectNew?.description != null &&
                         projectNew!.description!.isNotEmpty &&
-                        projectNew!.description!.length > 100)
+                        projectNew!.description!.length > 50)
                       TextButton(
                         onPressed: () {
                           setState(() {
-                            showFullDescription = !showFullDescription;
+                            _showFullDescription = !_showFullDescription;
                           });
                         },
                         child: Text(
-                          showFullDescription ? 'Read Less' : 'Read More',
+                          _showFullDescription ? 'Read Less' : 'Read More',
                           style: const TextStyle(
                             color: tBottomNavigation,
                           ),
@@ -321,6 +408,7 @@ class _ProjectPageDetailState extends State<ProjectPageDetail> {
                       ),
                   ],
                 ),
+                // ... (rest of the UI)
               ),
             ),
           ),
@@ -329,12 +417,59 @@ class _ProjectPageDetailState extends State<ProjectPageDetail> {
     );
   }
 
-  String formatDate(String? date) {
-    if (date == null) {
-      return '';
-    }
-    final dateTime = DateTime.parse(date);
-    final formattedDate = DateFormat('dd-MM-yyyy').format(dateTime);
-    return formattedDate;
+  Widget buildPaySlipListPage() {
+    return Container(
+      child: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              const SizedBox(
+                height: 15,
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              buildStaticYardList(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildStaticYardList() {
+    return FutureBuilder<List<PaySlip>>(
+      future: paySlipControler.fetchPaySlipList(widget.projectId),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        if (snapshot.hasError) {
+          return Center(
+            child: Text('Error: ${snapshot.error}'),
+          );
+        }
+        return Column(
+          children: [
+            SizedBox(
+              height: 500,
+              child: ListView.builder(
+                scrollDirection: Axis.vertical,
+                physics: const BouncingScrollPhysics(),
+                itemCount: snapshot.data?.length ?? 0,
+                itemBuilder: (BuildContext context, int index) {
+                  return PayCard(paySlip: snapshot.data?[index]);
+                },
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

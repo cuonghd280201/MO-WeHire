@@ -20,6 +20,7 @@ import 'package:we_hire/src/features/authentication/controllers/request_controll
 import 'package:we_hire/src/features/authentication/repository/request_repository.dart';
 import 'package:we_hire/src/features/authentication/screens/my_profile/dev_profile.dart';
 import 'package:we_hire/src/features/authentication/screens/my_profile/setting_dev.dart';
+import 'package:we_hire/src/features/authentication/screens/project/list_project_dev.dart';
 import 'package:we_hire/src/features/authentication/screens/welcome/main_page.dart';
 import 'package:we_hire/src/locator.dart';
 
@@ -85,6 +86,7 @@ class MyApp extends StatelessWidget {
             const SettingProfileDevPage(),
         ListInterviewDevReceive.routeName: (context) =>
             const ListInterviewDevReceive(),
+        ListProjectDev.routeName: (context) => const ListProjectDev()
       },
     );
   }
@@ -167,9 +169,12 @@ class _ListViewPageState extends State<ListViewPage> {
                   const SizedBox(
                     height: 15,
                   ),
-                  SizedBox(
+                  Container(
                     width: MediaQuery.of(context).size.width * 1,
                     height: 50,
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20)),
                     child: TextField(
                       controller: searchController,
                       onChanged: _onSearchChanged,
