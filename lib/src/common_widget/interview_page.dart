@@ -81,12 +81,23 @@ class _InterviewPageState extends State<InterviewPageCard>
           child: SizedBox(
             width: cardWidth,
             child: Row(
-              children: [
+              children: <Widget>[
                 Container(
                   width: 5,
                   height: 70,
                   decoration: BoxDecoration(
-                    color: tBottomNavigation,
+                    color: () {
+                      switch (widget.interview?.statusString) {
+                        case 'Approved':
+                          return tBottomNavigation;
+                        case 'Waiting Approval':
+                          return Colors.orangeAccent;
+                        case 'Completed':
+                          return Colors.blueAccent;
+                        default:
+                          return Colors.grey;
+                      }
+                    }(),
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(10),
                       bottomLeft: Radius.circular(10),
@@ -117,8 +128,19 @@ class _InterviewPageState extends State<InterviewPageCard>
                             flex: 1,
                             child: Container(
                               decoration: BoxDecoration(
-                                color: tPrimaryColor,
-                                border: Border.all(color: tPrimaryColor),
+                                color: () {
+                                  switch (widget.interview?.statusString) {
+                                    case 'Approved':
+                                      return tBottomNavigation;
+                                    case 'Waiting Approval':
+                                      return Colors
+                                          .orangeAccent; // Change this to the desired color
+                                    case 'Completed':
+                                      return Colors.blueAccent;
+                                    default:
+                                      return Colors.grey;
+                                  }
+                                }(),
                                 borderRadius: BorderRadius.circular(8.0),
                               ),
                               padding: const EdgeInsets.all(2.0),
@@ -147,7 +169,7 @@ class _InterviewPageState extends State<InterviewPageCard>
                               style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.bold,
-                                color: tBottomNavigation,
+                                color: Colors.black,
                               ),
                             ),
                           ),
@@ -159,7 +181,6 @@ class _InterviewPageState extends State<InterviewPageCard>
                                   .textTheme
                                   .bodyMedium
                                   ?.copyWith(
-                                    fontWeight: FontWeight.bold,
                                     color: Colors.black,
                                   ),
                             ),
@@ -176,7 +197,7 @@ class _InterviewPageState extends State<InterviewPageCard>
                               style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.bold,
-                                color: tBottomNavigation,
+                                color: Colors.black,
                               ),
                             ),
                           ),
@@ -188,7 +209,6 @@ class _InterviewPageState extends State<InterviewPageCard>
                                   .textTheme
                                   .bodyMedium
                                   ?.copyWith(
-                                    fontWeight: FontWeight.bold,
                                     color: Colors.black,
                                   ),
                             ),

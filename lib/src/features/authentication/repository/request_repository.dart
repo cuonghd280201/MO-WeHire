@@ -939,12 +939,17 @@ class RequestRepository implements Repository {
 
   @override
   Future<List<Project>> searchProject(
-      int? devId, String? devStatusInProject, String? searchKeyString) async {
+      int? devId, List<int> devStatusInProject, String? searchKeyString) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? accessToken = prefs.getString('accessToken');
     devId = prefs.getInt('devId');
     final uri = Uri.parse(
-        "$apiServer/Project/Developer/$devId?searchKeyString=$searchKeyString&devStatusInProject=$devStatusInProject");
+            "$apiServer/Project/Developer/$devId?searchKeyString=$searchKeyString")
+        .replace(queryParameters: {
+      'devStatusInProject':
+          devStatusInProject.map((status) => status.toString()).toList()
+    });
+    ;
     final response = await http.get(
       uri,
       headers: {"Authorization": "Bearer $accessToken"},

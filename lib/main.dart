@@ -62,9 +62,9 @@ class MyApp extends StatelessWidget {
     HiringNew? hiringNew;
     return MaterialApp(
       themeMode: ThemeMode.system,
-      //home: MainHomePage(),
+      home: MainHomePage(),
       navigatorKey: navigatorKey,
-      home: const TestLoginScreen(),
+      //home: const TestLoginScreen(),
       routes: {
         CategoriesWidget.routeName: (context) => const CategoriesWidget(),
         MainHomePage.routeName: (context) => const MainHomePage(),

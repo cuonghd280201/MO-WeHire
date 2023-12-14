@@ -21,7 +21,7 @@ class _ListInterviewDevReceiveState extends State<ListInterviewDevReceive>
   String searchQuery = '';
 
   final List<String> categories = [
-    'Waiting',
+    'Waiting Approval',
     'Approved',
     'Rejected',
     'Completed'
