@@ -4,9 +4,9 @@ import 'dart:io';
 
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:motion_toast/motion_toast.dart';
 import 'package:we_hire/src/constants/colors.dart';
 import 'package:we_hire/src/features/authentication/controllers/developer_controller.dart';
 import 'package:we_hire/src/features/authentication/models/user.dart';
@@ -22,6 +22,8 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   XFile? file;
 
   User? userProfile;
@@ -51,7 +53,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     super.initState();
     genderController.text = genderOptions.isNotEmpty ? genderOptions[0] : '';
 
-    developerController.fetchDeveloperById().then((user) {
+    developerController.fetchDeveloperById(context).then((user) {
       setState(() {
         userProfile = user;
         genderController.text = userProfile?.genderName ?? '';
@@ -68,7 +70,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     });
   }
 
-  List<String> genderOptions = ['Female', 'Male', 'Unknow'];
+  List<String> genderOptions = ['Female', 'Male', 'Unknown'];
   String? selectedGender;
 
   TextEditingController fisrtNameController =
@@ -108,11 +110,55 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         return '1';
       case 'female':
         return '2';
-      case 'unknow':
+      case 'unknown':
         return '3';
       default:
         throw Exception('Invalid gender text: $genderText');
     }
+  }
+
+  String? validateFirstName(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter your first name';
+    }
+    return null;
+  }
+
+  String? validateLastName(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter your last name';
+    }
+    return null;
+  }
+
+  String? validatePhoneNumber(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter your phone number';
+    }
+    // You can add more validation for the phone number if needed
+    return null;
+  }
+
+  String? validateSummary(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter a summary';
+    }
+    return null;
+  }
+
+  bool validateFields() {
+    if (fisrtNameController.text.isEmpty ||
+        lastNameController.text.isEmpty ||
+        phoneNumberController.text.isEmpty ||
+        summaryController.text.isEmpty ||
+        birthdayController.text.isEmpty) {
+      // Show an error message or handle the case where fields are empty
+      MotionToast.error(
+        description: const Text("Please fill in all the fields"),
+      ).show(context);
+      return false;
+    }
+    return true;
   }
 
   @override
@@ -135,270 +181,253 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(20),
-          child: Column(
-            children: [
-              const SizedBox(
-                height: 50,
-              ),
-              Form(
-                child: Column(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                const SizedBox(
+                  height: 50,
+                ),
+                Center(
+                  child: Stack(
+                    children: [
+                      Container(
+                          width: 120,
+                          height: 120,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                          ),
+                          child: _image != null
+                              ? (_image!.path.startsWith('http') ||
+                                      _image!.path.startsWith('https'))
+                                  ? Image.network(_image!
+                                      .path) // Firebase image, use Image.network
+                                  : Image.file(
+                                      _image!) // Local cache image, use Image.file
+                              : const Center(
+                                  child: Icon(Icons.image),
+                                )),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: InkWell(
+                          onTap: () {
+                            getImageProfile();
+                          },
+                          child: Container(
+                            height: 40,
+                            width: 40,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                width: 4,
+                                color:
+                                    Theme.of(context).scaffoldBackgroundColor,
+                              ),
+                            ),
+                            child: Icon(
+                              Icons.photo_camera,
+                              color: tBottomNavigation.withOpacity(0.7),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Row(
                   children: [
-                    Center(
-                      child: Stack(
-                        children: [
-                          Container(
-                              width: 120,
-                              height: 120,
-                              decoration: const BoxDecoration(
-                                shape: BoxShape.circle,
-                              ),
-                              child: _image != null
-                                  ? (_image!.path.startsWith('http') ||
-                                          _image!.path.startsWith('https'))
-                                      ? Image.network(_image!
-                                          .path) // Firebase image, use Image.network
-                                      : Image.file(
-                                          _image!) // Local cache image, use Image.file
-                                  : const Center(
-                                      child: Icon(Icons.image),
-                                    )),
-                          Positioned(
-                            bottom: 0,
-                            right: 0,
-                            child: InkWell(
-                              onTap: () {
-                                getImageProfile();
-                              },
-                              child: Container(
-                                height: 40,
-                                width: 40,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    width: 4,
-                                    color: Theme.of(context)
-                                        .scaffoldBackgroundColor,
-                                  ),
-                                ),
-                                child: Icon(
-                                  Icons.photo_camera,
-                                  color: tBottomNavigation.withOpacity(0.7),
-                                ),
-                              ),
-                            ),
+                    Expanded(
+                      child: TextFormField(
+                        maxLines: 1,
+                        decoration: const InputDecoration(
+                          labelText: 'First Name',
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.black),
                           ),
-                        ],
+                          border: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black)),
+                          contentPadding: EdgeInsets.only(top: 15),
+                          prefixIcon: Icon(
+                            Icons.person_2_rounded,
+                            color: tBottomNavigation,
+                          ),
+                        ),
+                        controller: fisrtNameController,
+                        validator: validateFirstName,
                       ),
                     ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextFormField(
-                            maxLines: 1,
-                            decoration: const InputDecoration(
-                              labelText: 'First Name',
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black),
-                              ),
-                              border: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.black)),
-                              contentPadding: EdgeInsets.only(top: 15),
-                              prefixIcon: Icon(
-                                Icons.person_2_rounded,
-                                color: tBottomNavigation,
-                              ),
-                            ),
-                            controller: fisrtNameController,
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        Expanded(
-                          child: TextFormField(
-                            maxLines: 1,
-                            decoration: const InputDecoration(
-                              labelText: 'Last Name',
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black),
-                              ),
-                              border: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.black)),
-                              contentPadding: EdgeInsets.only(top: 15),
-                              prefixIcon: Icon(Icons.person_2_rounded,
-                                  color: tBottomNavigation),
-                            ),
-                            controller: lastNameController,
-                          ),
-                        ),
-                      ],
-                    ),
                     const SizedBox(
-                      height: 20,
+                      width: 10,
                     ),
-                    TextFormField(
-                      maxLines: 1,
-                      decoration: const InputDecoration(
-                        labelText: 'Phone Number',
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.black),
-                        ),
-                        border: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.black)),
-                        contentPadding: EdgeInsets.only(top: 15),
-                        prefixIcon: Icon(Icons.phone, color: tBottomNavigation),
-                      ),
-                      controller: phoneNumberController,
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    TextFormField(
-                      maxLines: 1,
-                      decoration: const InputDecoration(
-                        labelText: 'Summary',
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.black),
-                        ),
-                        border: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.black)),
-                        contentPadding: EdgeInsets.only(top: 15),
-                        prefixIcon:
-                            Icon(Icons.summarize, color: tBottomNavigation),
-                      ),
-                      controller: summaryController,
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: DropdownButton<String>(
-                            value: genderController.text,
-                            icon: const Icon(Icons.arrow_drop_down),
-                            iconSize: 24,
-                            elevation: 16,
-                            style: const TextStyle(color: Colors.black),
-                            onChanged: (String? newValue) {
-                              setState(() {
-                                genderController.text = newValue!;
-                              });
-                            },
-                            items: genderOptions.map<DropdownMenuItem<String>>(
-                              (String value) {
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Text(value),
-                                );
-                              },
-                            ).toList(),
+                    Expanded(
+                      child: TextFormField(
+                        maxLines: 1,
+                        decoration: const InputDecoration(
+                          labelText: 'Last Name',
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.black),
                           ),
+                          border: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black)),
+                          contentPadding: EdgeInsets.only(top: 15),
+                          prefixIcon: Icon(Icons.person_2_rounded,
+                              color: tBottomNavigation),
                         ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    TextFormField(
-                      maxLines: 1,
-                      decoration: const InputDecoration(
-                        labelText: 'Birthday',
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.black),
-                        ),
-                        border: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.black)),
-                        contentPadding: EdgeInsets.only(top: 15),
-                        prefixIcon:
-                            Icon(Icons.cake_rounded, color: tBottomNavigation),
-                      ),
-                      controller: birthdayController,
-                      onTap: () {
-                        _selectDate(context);
-                      },
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    SizedBox(
-                      width: 100,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          elevation: 0,
-                          backgroundColor: tBottomNavigation,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                        ),
-                        onPressed: () async {
-                          String filePath = _image != null
-                              ? _image!.path
-                              : userProfile?.userImage ?? '';
-                          String fisrtName = fisrtNameController.text;
-                          String lastName = lastNameController.text;
-                          String phoneNumber = phoneNumberController.text;
-                          String birthDay = birthdayController.text;
-                          String genderId =
-                              mapGenderToId(genderController.text);
-                          String summary = summaryController.text;
-                          try {
-                            final bool success =
-                                await developerController.editDeveloper(
-                              genderId,
-                              fisrtName,
-                              lastName,
-                              phoneNumber,
-                              birthDay,
-                              summary,
-                              filePath,
-                            );
-
-                            if (success) {
-                              Fluttertoast.showToast(
-                                msg: "Edit account Successfully.",
-                                toastLength: Toast.LENGTH_SHORT,
-                                gravity: ToastGravity.BOTTOM,
-                                timeInSecForIosWeb: 1,
-                                backgroundColor: tBottomNavigation,
-                                textColor: const Color.fromARGB(255, 0, 0, 0),
-                                fontSize: 16.0,
-                              );
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const UserProfileScreen()),
-                              );
-                            } else {
-                              Fluttertoast.showToast(
-                                msg: "Failed to post education.",
-                                toastLength: Toast.LENGTH_SHORT,
-                                gravity: ToastGravity.BOTTOM,
-                                timeInSecForIosWeb: 1,
-                                backgroundColor:
-                                    const Color.fromARGB(255, 255, 0, 0),
-                                textColor: const Color.fromARGB(255, 0, 0, 0),
-                                fontSize: 16.0,
-                              );
-                            }
-                          } catch (e) {
-                            print("Error: $e");
-                            Fluttertoast.showToast(
-                              msg: "An error occurred: $e",
-                              toastLength: Toast.LENGTH_SHORT,
-                              gravity: ToastGravity.BOTTOM,
-                              timeInSecForIosWeb: 1,
-                              backgroundColor: Colors.yellowAccent,
-                              textColor: const Color.fromARGB(255, 0, 0, 0),
-                              fontSize: 16.0,
-                            );
-                          }
-                        },
-                        child: const Text('Save'),
+                        controller: lastNameController,
+                        validator: validateLastName,
                       ),
                     ),
                   ],
                 ),
-              ),
-            ],
+                const SizedBox(
+                  height: 20,
+                ),
+                TextFormField(
+                  maxLines: 1,
+                  decoration: const InputDecoration(
+                    labelText: 'Phone Number',
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
+                    border: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black)),
+                    contentPadding: EdgeInsets.only(top: 15),
+                    prefixIcon: Icon(Icons.phone, color: tBottomNavigation),
+                  ),
+                  controller: phoneNumberController,
+                  validator: validatePhoneNumber,
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                TextFormField(
+                  maxLines: 1,
+                  decoration: const InputDecoration(
+                    labelText: 'Summary',
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
+                    border: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black)),
+                    contentPadding: EdgeInsets.only(top: 15),
+                    prefixIcon: Icon(Icons.summarize, color: tBottomNavigation),
+                  ),
+                  validator: validateSummary,
+                  controller: summaryController,
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: DropdownButton<String>(
+                        value: genderController.text,
+                        icon: const Icon(Icons.arrow_drop_down),
+                        iconSize: 24,
+                        elevation: 16,
+                        style: const TextStyle(color: Colors.black),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            genderController.text = newValue!;
+                          });
+                        },
+                        items: genderOptions.map<DropdownMenuItem<String>>(
+                          (String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          },
+                        ).toList(),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                TextFormField(
+                  maxLines: 1,
+                  decoration: const InputDecoration(
+                    labelText: 'Birthday',
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
+                    border: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black)),
+                    contentPadding: EdgeInsets.only(top: 15),
+                    prefixIcon:
+                        Icon(Icons.cake_rounded, color: tBottomNavigation),
+                  ),
+                  controller: birthdayController,
+                  onTap: () {
+                    _selectDate(context);
+                  },
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                SizedBox(
+                  width: 100,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      elevation: 0,
+                      backgroundColor: tBottomNavigation,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                    onPressed: () async {
+                      if (_formKey.currentState?.validate() ?? false) {
+                        String filePath = _image != null
+                            ? _image!.path
+                            : userProfile?.userImage ?? '';
+                        String fisrtName = fisrtNameController.text;
+                        String lastName = lastNameController.text;
+                        String phoneNumber = phoneNumberController.text;
+                        String birthDay = birthdayController.text;
+                        String genderId = mapGenderToId(genderController.text);
+                        String summary = summaryController.text;
+                        try {
+                          final bool success =
+                              await developerController.editDeveloper(
+                            context,
+                            genderId,
+                            fisrtName,
+                            lastName,
+                            phoneNumber,
+                            birthDay,
+                            summary,
+                            filePath,
+                          );
+
+                          if (success) {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => const UserProfileScreen(),
+                              ),
+                            );
+                            MotionToast.success(
+                              description:
+                                  const Text("Edit profile successfully"),
+                            ).show(context);
+                          } else {
+                            MotionToast.error(
+                              description: const Text("Edit profile failed"),
+                            ).show(context);
+                          }
+                        } catch (e) {
+                          print("Error: $e");
+                          MotionToast.error(
+                            description: const Text("Edit profile failed"),
+                          ).show(context);
+                        }
+                      }
+                    },
+                    child: const Text('Save'),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

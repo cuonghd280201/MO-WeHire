@@ -116,7 +116,7 @@ class _ListEducationPageState extends State<ListEducationPage> {
 
   Widget buildStaticYardList() {
     return FutureBuilder<List<Education>>(
-        future: hiringController.fetchEducationList(),
+        future: hiringController.fetchEducationList(context),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(

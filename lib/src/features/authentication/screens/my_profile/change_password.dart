@@ -180,7 +180,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
 
                             try {
                               final bool success =
-                                  await hiringController.updatePassword(
+                                  await hiringController.updatePassword(context,
                                       current, newPassword, confirmPassword);
 
                               if (success) {

@@ -48,7 +48,7 @@ class _ProjectPageDetailState extends State<ProjectPageDetail> {
   Future<void> fetchData() async {
     try {
       final project =
-          await _projectController.fetchProjectById(widget.projectId);
+          await _projectController.fetchProjectById(context, widget.projectId);
       if (mounted) {
         setState(() {
           projectNew = project;
@@ -163,7 +163,11 @@ class _ProjectPageDetailState extends State<ProjectPageDetail> {
                         ),
                         Container(
                           decoration: BoxDecoration(
-                            color: tBottomNavigation,
+                            color: projectNew?.statusString == 'In process'
+                                ? Colors.green
+                                : projectNew?.statusString == 'Closing process'
+                                    ? Colors.grey
+                                    : Colors.black,
                             borderRadius: BorderRadius.circular(15),
                           ),
                           child: Padding(
@@ -442,7 +446,7 @@ class _ProjectPageDetailState extends State<ProjectPageDetail> {
 
   Widget buildStaticYardList() {
     return FutureBuilder<List<PaySlip>>(
-      future: paySlipControler.fetchPaySlipList(widget.projectId),
+      future: paySlipControler.fetchPaySlipList(context, widget.projectId),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(

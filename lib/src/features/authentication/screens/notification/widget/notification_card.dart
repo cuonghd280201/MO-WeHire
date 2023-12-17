@@ -43,7 +43,7 @@ class _YardSimpleCardState extends State<NotificationCard>
 
   void viewYard() {
     notificationController
-        .readNotification(widget.notificationDev?.notificationId)
+        .readNotification(context, widget.notificationDev?.notificationId)
         .then((success) {
       // Check if the notification was successfully read
       if (success != null && success) {
@@ -105,7 +105,7 @@ class _YardSimpleCardState extends State<NotificationCard>
               BorderRadius.circular(10.0), // Adjust the radius as needed
         ),
         child: Padding(
-          padding: const EdgeInsets.all(5.0),
+          padding: const EdgeInsets.all(10.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
@@ -126,8 +126,8 @@ class _YardSimpleCardState extends State<NotificationCard>
                   AnimatedContainer(
                     duration: const Duration(milliseconds: 500),
                     curve: Curves.easeInOut,
-                    width: 15,
-                    height: 15,
+                    width: 10,
+                    height: 10,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: widget.notificationDev?.isRead == false

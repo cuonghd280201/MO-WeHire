@@ -4,7 +4,7 @@ class WorkLog {
   String? workDateMMM;
   String? timeIn;
   String? timeOut;
-  int? hourWorkInDay;
+  double? hourWorkInDay;
   bool? isPaidLeave;
 
   WorkLog(
@@ -18,12 +18,13 @@ class WorkLog {
 
   factory WorkLog.fromJson(Map<String, dynamic> jsonInput) {
     return WorkLog(
-      workLogId: jsonInput['workLogId'] as int,
-      paySlipId: jsonInput['paySlipId'] as int,
+      workLogId: jsonInput['workLogId'] as int?,
+      paySlipId: jsonInput['paySlipId'] as int?,
       workDateMMM: jsonInput['workDateMMM'],
       timeIn: jsonInput['timeIn'],
       timeOut: jsonInput['timeOut'],
-      hourWorkInDay: jsonInput['hourWorkInDay'],
+      hourWorkInDay:
+          (jsonInput['hourWorkInDay'] as num?)?.toDouble(), // Convert to double
       isPaidLeave: jsonInput['isPaidLeave'],
     );
   }

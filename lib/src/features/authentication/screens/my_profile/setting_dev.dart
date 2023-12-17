@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+import 'package:motion_toast/motion_toast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:we_hire/src/constants/colors.dart';
 import 'package:we_hire/src/features/authentication/controllers/developer_controller.dart';
@@ -28,10 +29,12 @@ class _SettingProfileDevPageState extends State<SettingProfileDevPage> {
   void initState() {
     super.initState();
     // Fetch the user's profile using DeveloperController
-    developerController.fetchUserList().then((user) {
-      setState(() {
-        userProfile = user;
-      });
+    developerController.fetchUserList(context).then((user) {
+      if (mounted) {
+        setState(() {
+          userProfile = user;
+        });
+      }
     });
   }
 
@@ -136,14 +139,14 @@ class _SettingProfileDevPageState extends State<SettingProfileDevPage> {
                                       borderRadius: BorderRadius.circular(
                                           8), // Set the desired border radius
                                     ),
-                                    child: Icon(
+                                    child: const Icon(
                                       Icons.person_2_rounded,
                                       color: Colors
                                           .deepPurple, // Set the icon color to white or another contrasting color
                                     ),
                                   ),
-                                  SizedBox(width: 16),
-                                  Text("My Account"),
+                                  const SizedBox(width: 16),
+                                  const Text("My Account"),
                                 ],
                               ),
                             ),
@@ -197,14 +200,14 @@ class _SettingProfileDevPageState extends State<SettingProfileDevPage> {
                                         borderRadius: BorderRadius.circular(
                                             8), // Set the desired border radius
                                       ),
-                                      child: Icon(
+                                      child: const Icon(
                                         Icons.house_rounded,
                                         color: Colors
                                             .blue, // Set the icon color to white or another contrasting color
                                       ),
                                     ),
-                                    SizedBox(width: 16),
-                                    Text("Education"),
+                                    const SizedBox(width: 16),
+                                    const Text("Education"),
                                   ],
                                 ),
                               ),
@@ -259,14 +262,14 @@ class _SettingProfileDevPageState extends State<SettingProfileDevPage> {
                                         borderRadius: BorderRadius.circular(
                                             8), // Set the desired border radius
                                       ),
-                                      child: Icon(
+                                      child: const Icon(
                                         Icons.badge_rounded,
                                         color: Colors
                                             .pink, // Set the icon color to white or another contrasting color
                                       ),
                                     ),
-                                    SizedBox(width: 16),
-                                    Text("Professional Experience"),
+                                    const SizedBox(width: 16),
+                                    const Text("Professional Experience"),
                                   ],
                                 ),
                               ),
@@ -292,6 +295,9 @@ class _SettingProfileDevPageState extends State<SettingProfileDevPage> {
                                   builder: (context) =>
                                       const TestLoginScreen()),
                               (route) => false);
+                          MotionToast.success(
+                            description: const Text("Logout in successfully"),
+                          ).show(context);
                         },
                         child: Container(
                           padding: const EdgeInsets.symmetric(vertical: 15),
@@ -314,8 +320,8 @@ class _SettingProfileDevPageState extends State<SettingProfileDevPage> {
                             children: [
                               GestureDetector(
                                 onTap: () async {
-                                  bool tokenRevoked =
-                                      await developerController.revokeToken();
+                                  bool tokenRevoked = await developerController
+                                      .revokeToken(context);
 
                                   if (tokenRevoked) {
                                     SharedPreferences preferences =
@@ -345,14 +351,14 @@ class _SettingProfileDevPageState extends State<SettingProfileDevPage> {
                                           borderRadius: BorderRadius.circular(
                                               8), // Set the desired border radius
                                         ),
-                                        child: Icon(
+                                        child: const Icon(
                                           Icons.logout_rounded,
                                           color: Colors
                                               .orange, // Set the icon color to white or another contrasting color
                                         ),
                                       ),
-                                      SizedBox(width: 16),
-                                      Text("LogOut"),
+                                      const SizedBox(width: 16),
+                                      const Text("LogOut"),
                                     ],
                                   ),
                                 ),

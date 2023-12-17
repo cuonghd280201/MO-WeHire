@@ -176,7 +176,7 @@ class _InterviewPageState extends State<InterviewPageCard>
                           SizedBox(
                             width: cardWidth / 3,
                             child: Text(
-                              '${widget.interview?.dateOfInterview}',
+                              '${widget.interview?.dateOfInterviewMMM}',
                               style: Theme.of(context)
                                   .textTheme
                                   .bodyMedium

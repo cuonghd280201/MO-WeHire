@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
+import 'package:motion_toast/motion_toast.dart';
 import 'package:we_hire/src/constants/colors.dart';
 import 'package:we_hire/src/features/authentication/controllers/developer_controller.dart';
 
@@ -141,6 +142,7 @@ class _ProfessionalCardState extends State<ProfessionalCard>
                                       final bool success =
                                           await professionalController
                                               .deleteProfesstionalExperience(
+                                                  context,
                                                   widget.professionalExperience
                                                       ?.professionalExperienceId);
                                       if (success) {
@@ -151,43 +153,22 @@ class _ProfessionalCardState extends State<ProfessionalCard>
                                               builder: (context) =>
                                                   const ListProfessionalPage()),
                                         );
-                                        Fluttertoast.showToast(
-                                          msg:
-                                              "Deleted Professional Successfully.",
-                                          toastLength: Toast.LENGTH_SHORT,
-                                          gravity: ToastGravity.BOTTOM,
-                                          timeInSecForIosWeb: 1,
-                                          backgroundColor: Colors.greenAccent,
-                                          textColor: Colors.white,
-                                          fontSize: 16.0,
-                                        );
+                                        MotionToast.success(
+                                          description: const Text(
+                                              "Successfully deleted professional experience"),
+                                        ).show(context);
                                       } else {
-                                        Fluttertoast.showToast(
-                                          msg:
-                                              "Failed to delete professcional.",
-                                          toastLength: Toast.LENGTH_SHORT,
-                                          gravity: ToastGravity.BOTTOM,
-                                          timeInSecForIosWeb: 1,
-                                          backgroundColor: const Color.fromARGB(
-                                              255, 255, 0, 0),
-                                          textColor: const Color.fromARGB(
-                                              255, 0, 0, 0),
-                                          fontSize: 16.0,
-                                        );
+                                        MotionToast.error(
+                                          description: const Text(
+                                              "Delete professional experience failed"),
+                                        ).show(context);
                                       }
                                       // Close the dialog
                                     } catch (e) {
-                                      Fluttertoast.showToast(
-                                        msg: "Failed to delete professcional.",
-                                        toastLength: Toast.LENGTH_SHORT,
-                                        gravity: ToastGravity.BOTTOM,
-                                        timeInSecForIosWeb: 1,
-                                        backgroundColor: const Color.fromARGB(
-                                            255, 255, 0, 0),
-                                        textColor:
-                                            const Color.fromARGB(255, 0, 0, 0),
-                                        fontSize: 16.0,
-                                      );
+                                      MotionToast.error(
+                                        description: const Text(
+                                            "Delete professional experience failed"),
+                                      ).show(context);
                                     }
                                   },
                                   child: const Text("Yes",

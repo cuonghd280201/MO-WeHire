@@ -62,6 +62,7 @@ class _WorkLogCardState extends State<WorkLogCard>
   @override
   Widget build(BuildContext context) {
     double cardWidth = MediaQuery.of(context).size.width * 1;
+
     return ScaleTransition(
       scale: CurvedAnimation(
           parent: animationController, curve: Curves.easeInToLinear),
@@ -114,11 +115,13 @@ class _WorkLogCardState extends State<WorkLogCard>
                     flex: 1,
                     child: Container(
                       decoration: BoxDecoration(
-                        color: greenshede0,
-                        border: Border.all(
-                            color: grayshade), // Add a border around duration
-                        borderRadius: BorderRadius.circular(
-                            8.0), // Add border radius if desired
+                        color: widget.workLog?.isPaidLeave == null
+                            ? Colors.green
+                            : widget.workLog?.isPaidLeave == true
+                                ? Colors.orangeAccent
+                                : Colors.grey,
+                        border: Border.all(color: Colors.white),
+                        borderRadius: BorderRadius.circular(10.0),
                       ),
                       padding: const EdgeInsets.all(2.0),
                       child: Align(
@@ -126,7 +129,9 @@ class _WorkLogCardState extends State<WorkLogCard>
                         child: Text(
                           widget.workLog?.isPaidLeave == null
                               ? 'Completion'
-                              : 'Time Off',
+                              : widget.workLog?.isPaidLeave == true
+                                  ? 'Paid Leave'
+                                  : 'Time Off',
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,

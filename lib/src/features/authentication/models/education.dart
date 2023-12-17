@@ -6,6 +6,10 @@ class Education {
   String? startDate;
   String? endDate;
   String? description;
+  String? developerFullName;
+  String? developerCode;
+  String? startDateMMM;
+  String? endDateMMM;
 
   Education({
     this.educationId,
@@ -15,6 +19,10 @@ class Education {
     this.startDate,
     this.endDate,
     this.description,
+    this.developerCode,
+    this.developerFullName,
+    this.startDateMMM,
+    this.endDateMMM,
   });
 
   factory Education.fromJson(Map<String, dynamic> jsonInput) {
@@ -26,6 +34,10 @@ class Education {
       startDate: jsonInput['startDate'] as String?,
       endDate: jsonInput['endDate'] as String?,
       description: jsonInput['description'] as String?,
+      developerCode: jsonInput['developerCode'] as String?,
+      developerFullName: jsonInput['developerFullName'] as String?,
+      startDateMMM: jsonInput['startDateMMM'] as String?,
+      endDateMMM: jsonInput['endDateMMM'] as String?,
     );
   }
 }

@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
+import 'package:motion_toast/motion_toast.dart';
 import 'package:we_hire/src/constants/colors.dart';
 import 'package:we_hire/src/features/authentication/controllers/developer_controller.dart';
 import 'package:we_hire/src/features/authentication/models/education.dart';
@@ -137,8 +138,10 @@ class _EducationCardState extends State<EducationCard>
                                     try {
                                       final bool success =
                                           await educationController
-                                              .deleteEducation(widget
-                                                  .education?.educationId);
+                                              .deleteEducation(
+                                                  context,
+                                                  widget
+                                                      .education?.educationId);
                                       if (success) {
                                         Navigator.of(context).pop();
                                         Navigator.push(
@@ -147,42 +150,22 @@ class _EducationCardState extends State<EducationCard>
                                               builder: (context) =>
                                                   const ListEducationPage()),
                                         );
-                                        Fluttertoast.showToast(
-                                          msg:
-                                              "Deleted Education Successfully.",
-                                          toastLength: Toast.LENGTH_SHORT,
-                                          gravity: ToastGravity.BOTTOM,
-                                          timeInSecForIosWeb: 1,
-                                          backgroundColor: Colors.greenAccent,
-                                          textColor: Colors.white,
-                                          fontSize: 16.0,
-                                        );
+                                        MotionToast.success(
+                                          description: const Text(
+                                              "Successfully deleted education"),
+                                        ).show(context);
                                       } else {
-                                        Fluttertoast.showToast(
-                                          msg: "Failed to delete education.",
-                                          toastLength: Toast.LENGTH_SHORT,
-                                          gravity: ToastGravity.BOTTOM,
-                                          timeInSecForIosWeb: 1,
-                                          backgroundColor: const Color.fromARGB(
-                                              255, 255, 0, 0),
-                                          textColor: const Color.fromARGB(
-                                              255, 0, 0, 0),
-                                          fontSize: 16.0,
-                                        );
+                                        MotionToast.error(
+                                          description: const Text(
+                                              "Delete education failed"),
+                                        ).show(context);
                                       }
                                       // Close the dialog
                                     } catch (e) {
-                                      Fluttertoast.showToast(
-                                        msg: "Failed to delete education.",
-                                        toastLength: Toast.LENGTH_SHORT,
-                                        gravity: ToastGravity.BOTTOM,
-                                        timeInSecForIosWeb: 1,
-                                        backgroundColor: const Color.fromARGB(
-                                            255, 255, 0, 0),
-                                        textColor:
-                                            const Color.fromARGB(255, 0, 0, 0),
-                                        fontSize: 16.0,
-                                      );
+                                      MotionToast.error(
+                                        description: const Text(
+                                            "Delete education failed"),
+                                      ).show(context);
                                     }
                                   },
                                   child: const Text("Yes",

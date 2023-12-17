@@ -113,9 +113,12 @@ class _PayCardState extends State<PayCard> with SingleTickerProviderStateMixin {
                     flex: 1,
                     child: Container(
                       decoration: BoxDecoration(
-                        color: greenshede0,
+                        color: widget.paySlip?.statusString == 'Paid'
+                            ? Colors.green
+                            : Colors.blueAccent,
                         border: Border.all(
-                            color: grayshade), // Add a border around duration
+                            color:
+                                Colors.white), // Add a border around duration
                         borderRadius: BorderRadius.circular(
                             8.0), // Add border radius if desired
                       ),

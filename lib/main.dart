@@ -5,6 +5,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:we_hire/firebase_api.dart';
 import 'package:we_hire/src/common_widget/request_page.dart';
+import 'package:we_hire/src/features/authentication/controllers/developer_controller.dart';
 import 'package:we_hire/src/features/authentication/screens/interview/list_interview_dev_receive.dart';
 import 'package:we_hire/src/features/authentication/screens/list_request_by_status/list_view_dev_accepted.dart';
 import 'package:we_hire/src/features/authentication/screens/list_request_by_status/list_view_dev_interview.dart';
@@ -62,10 +63,11 @@ class MyApp extends StatelessWidget {
     HiringNew? hiringNew;
     return MaterialApp(
       themeMode: ThemeMode.system,
-      home: MainHomePage(),
+      //home: const MainHomePage(),
       navigatorKey: navigatorKey,
-      //home: const TestLoginScreen(),
+      home: const TestLoginScreen(),
       routes: {
+        TestLoginScreen.routeName: (context) => const TestLoginScreen(),
         CategoriesWidget.routeName: (context) => const CategoriesWidget(),
         MainHomePage.routeName: (context) => const MainHomePage(),
         ListViewPage.routeName: (context) => const ListViewPage(),
@@ -93,18 +95,22 @@ class MyApp extends StatelessWidget {
 }
 
 class ListViewPage extends StatefulWidget {
-  const ListViewPage({super.key});
+  const ListViewPage({Key? key}) : super(key: key);
 
   @override
   _ListViewPageState createState() => _ListViewPageState();
+
   static const String routeName = "/view";
 }
 
 class _ListViewPageState extends State<ListViewPage> {
   List<HiringNew> postData = [];
   var hiringController = RequestController(RequestRepository());
+  var devloperController = DeveloperController(RequestRepository());
+
   String searchQuery = '';
   TextEditingController searchController = TextEditingController();
+
   void _onSearchChanged(String value) {
     setState(() {
       searchQuery = value.toLowerCase();
@@ -113,7 +119,7 @@ class _ListViewPageState extends State<ListViewPage> {
   }
 
   void _searchProjects() {
-    hiringController.searchHiringList(searchQuery);
+    hiringController.searchHiringList(context, searchQuery);
   }
 
   void _clearSearch() {
@@ -130,135 +136,163 @@ class _ListViewPageState extends State<ListViewPage> {
   }
 
   Widget buildViewPage() {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: tHeader,
-        title: const Text('List Request'),
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_outlined),
-          color: Colors.white,
-          onPressed: () {
-            Navigator.pushReplacementNamed(context, MainHomePage.routeName);
-          },
-        ),
-      ),
-      body: Stack(
-        children: [
-          Row(
-            children: [
-              Expanded(
-                flex: 2,
-                child: Container(),
-              ),
-              Expanded(
-                  flex: 1,
-                  child: Container(
-                    color:
-                        const Color.fromARGB(255, 63, 151, 98).withOpacity(0.1),
-                  )),
-            ],
-          ),
-          SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  Container(
-                    width: MediaQuery.of(context).size.width * 1,
-                    height: 50,
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20)),
-                    child: TextField(
-                      controller: searchController,
-                      onChanged: _onSearchChanged,
-                      decoration: InputDecoration(
-                        labelText: 'Search',
-                        hintText: 'Search hiring request...',
-                        labelStyle: const TextStyle(
-                          color: tBottomNavigation, // Set the label text color
-                        ),
-                        focusedBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.black),
-                        ),
-                        prefixIcon: const Icon(
-                          Icons.search,
-                          color: tBottomNavigation,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  buildStaticYardList(),
-                ],
-              ),
+    return FutureBuilder<bool>(
+      future: devloperController.checkAndRefreshToken(context),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
+        if (snapshot.hasError || snapshot.data == false) {
+          // If there is an error or the token has expired, navigate to the login screen
+          WidgetsBinding.instance!.addPostFrameCallback((_) {
+            Navigator.pushReplacementNamed(context, TestLoginScreen.routeName);
+          });
+
+          // You can return a loading indicator or an empty container here if needed
+          return Container();
+        }
+
+        // Continue with the UI if the token is valid
+        return Scaffold(
+          appBar: AppBar(
+            backgroundColor: tHeader,
+            title: const Text('List Request'),
+            centerTitle: true,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back_ios_new_outlined),
+              color: Colors.white,
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, MainHomePage.routeName);
+              },
             ),
           ),
-        ],
-      ),
+          body: Stack(
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: Container(),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: Container(
+                      color: const Color.fromARGB(255, 63, 151, 98)
+                          .withOpacity(0.1),
+                    ),
+                  ),
+                ],
+              ),
+              SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      Container(
+                        width: MediaQuery.of(context).size.width * 1,
+                        height: 50,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: TextField(
+                          controller: searchController,
+                          onChanged: _onSearchChanged,
+                          decoration: InputDecoration(
+                            labelText: 'Search',
+                            hintText: 'Search hiring request...',
+                            labelStyle: const TextStyle(
+                              color:
+                                  tBottomNavigation, // Set the label text color
+                            ),
+                            focusedBorder: const OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black),
+                            ),
+                            prefixIcon: const Icon(
+                              Icons.search,
+                              color: tBottomNavigation,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      buildStaticYardList(),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
   Widget buildStaticYardList() {
     return FutureBuilder<List<HiringNew>>(
-        future: hiringController.fetchHiringList(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          if (snapshot.hasError) {
-            return const Center(
-              child: Text('error'),
-            );
-          }
-          List<HiringNew>? filteredList = snapshot.data
-              ?.where((hiringNew) =>
-                  hiringNew.jobTitle!.toLowerCase().contains(searchQuery) ||
-                  hiringNew.requestCode!.toLowerCase().contains(searchQuery))
-              .toList();
-
-          return Column(
-            children: [
-              SizedBox(
-                height: 600,
-                child: ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  physics: const BouncingScrollPhysics(),
-                  itemCount: snapshot.data?.length ?? 0,
-                  itemBuilder: (BuildContext context, int index) {
-                    // Check if the index is within the valid range
-                    if (index >= 0 && index < filteredList!.length) {
-                      return RequestCard(hiringNew: filteredList[index]);
-                    } else {
-                      // Handle the case where the index is out of bounds
-                      return Center(
-                        child: ClipOval(
-                          child: Image.asset(
-                            'assets/images/splash_images/interview.png',
-                            height: 300,
-                            width: 300,
-                          ),
-                        ),
-                      );
-                    }
-                  },
-                ),
-              ),
-            ],
+      future: hiringController.fetchHiringList(context),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
           );
-        });
+        }
+
+        if (snapshot.hasError) {
+          return const Center(
+            child: Text('error'),
+          );
+        }
+
+        List<HiringNew>? filteredList = snapshot.data
+            ?.where((hiringNew) =>
+                hiringNew.jobTitle!.toLowerCase().contains(searchQuery) ||
+                hiringNew.requestCode!.toLowerCase().contains(searchQuery))
+            .toList();
+
+        return Column(
+          children: [
+            SizedBox(
+              height: 600,
+              child: ListView.builder(
+                scrollDirection: Axis.vertical,
+                physics: const BouncingScrollPhysics(),
+                itemCount: snapshot.data?.length ?? 0,
+                itemBuilder: (BuildContext context, int index) {
+                  // Check if the index is within the valid range
+                  if (index >= 0 && index < filteredList!.length) {
+                    return RequestCard(hiringNew: filteredList[index]);
+                  } else {
+                    // Handle the case where the index is out of bounds
+                    return Center(
+                      child: ClipOval(
+                        child: Image.asset(
+                          'assets/images/splash_images/interview.png',
+                          height: 300,
+                          width: 300,
+                        ),
+                      ),
+                    );
+                  }
+                },
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

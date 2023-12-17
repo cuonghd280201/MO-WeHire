@@ -65,7 +65,7 @@ class _ListViewPageDevInterviewState extends State<ListViewPageDevInterview> {
 
   Widget buildStaticYardList() {
     return FutureBuilder<List<HiringNew>>(
-        future: hiringController.fetchHiringList(),
+        future: hiringController.fetchHiringList(context),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(

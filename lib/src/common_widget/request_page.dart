@@ -46,7 +46,8 @@ class _YardDetailState extends State<RequestPageDetail> {
   }
 
   Future<void> fetchData() async {
-    final hiringnew = await hiringController.fetchHiringById(widget.requestId);
+    final hiringnew =
+        await hiringController.fetchHiringById(context, widget.requestId);
     if (mounted) {
       setState(() {
         hiringNew = hiringnew;

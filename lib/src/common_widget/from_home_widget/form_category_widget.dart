@@ -25,16 +25,27 @@ class CategoriesWidget extends StatefulWidget {
 class _CategoriesWidgetState extends State<CategoriesWidget> {
   User? userProfile;
   final developerController = DeveloperController(RequestRepository());
+  late bool _isDisposed; // Add this variable
 
   @override
   void initState() {
     super.initState();
+    _isDisposed = false; // Initialize the variable
+
     // Fetch the user's profile using DeveloperController
-    developerController.fetchUserList().then((user) {
-      setState(() {
-        userProfile = user;
-      });
+    developerController.fetchUserList(context).then((user) {
+      if (!_isDisposed) {
+        setState(() {
+          userProfile = user;
+        });
+      }
     });
+  }
+
+  @override
+  void dispose() {
+    _isDisposed = true; // Set the flag to true when the widget is disposed
+    super.dispose();
   }
 
   List status = [
@@ -105,7 +116,7 @@ class _CategoriesWidgetState extends State<CategoriesWidget> {
                   IconButton(
                     onPressed: () async {
                       bool tokenRevoked =
-                          await developerController.revokeToken();
+                          await developerController.revokeToken(context);
 
                       if (tokenRevoked) {
                         SharedPreferences preferences =

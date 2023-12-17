@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:we_hire/src/constants/colors.dart';
 import 'package:we_hire/src/features/authentication/controllers/developer_controller.dart';
 import 'package:we_hire/src/features/authentication/models/user.dart';
@@ -43,7 +44,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   void initState() {
     super.initState();
     // Fetch the user's profile using DeveloperController
-    developerController.fetchUserList().then((user) {
+    developerController.fetchUserList(context).then((user) {
       setState(() {
         userProfile = user;
       });
@@ -89,6 +90,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     height: 80,
                     decoration: BoxDecoration(
                         shape: BoxShape.circle,
+                        border: Border.all(
+                            color: tBottomNavigation.withOpacity(0.5),
+                            width: 2.0),
                         image: DecorationImage(
                           fit: BoxFit.cover,
                           image: userProfile?.userImage != null
@@ -215,7 +219,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              '${userProfile?.dateOfBirth}',
+                              formatDate(userProfile?.dateOfBirth),
                               style: Theme.of(context).textTheme.bodyLarge,
                             ),
                           ],
@@ -269,113 +273,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               const SizedBox(
                 height: 20,
               ),
-              // Container(
-              //   padding: const EdgeInsets.only(top: 20, bottom: 20),
-              //   child: Divider(
-              //     thickness: 1,
-              //     color: Colors.grey[200],
-              //   ),
-              // ),
-              // Container(
-              //   decoration: BoxDecoration(
-              //     color: greenshede1.withOpacity(0.2),
-              //     borderRadius: BorderRadius.circular(8),
-              //   ),
-              //   child: ListTile(
-              //     leading: Container(
-              //       width: 40,
-              //       height: 40,
-              //       decoration: BoxDecoration(
-              //         borderRadius: BorderRadius.circular(100),
-              //       ),
-              //       child: const Icon(
-              //         Icons.home_work_rounded,
-              //         color: tBottomNavigation,
-              //       ),
-              //     ),
-              //     title: Text(
-              //       'Education',
-              //       style: Theme.of(context)
-              //           .textTheme
-              //           .bodyMedium
-              //           ?.copyWith(fontWeight: FontWeight.bold),
-              //     ),
-              //     trailing: GestureDetector(
-              //       onTap: () {
-              //         Navigator.of(context).push(
-              //           MaterialPageRoute(
-              //               builder: (context) => ListEducationPage()),
-              //         );
-              //       },
-              //       child: Container(
-              //         width: 30,
-              //         height: 30,
-              //         decoration: BoxDecoration(
-              //           borderRadius: BorderRadius.circular(100),
-              //         ),
-              //         child: const Icon(
-              //           Icons.arrow_circle_right_rounded,
-              //           color: tBottomNavigation,
-              //         ),
-              //       ),
-              //     ),
-              //   ),
-              // ),
-              // const SizedBox(
-              //   height: 10,
-              // ),
-              // Container(
-              //   decoration: BoxDecoration(
-              //     color: greenshede1.withOpacity(0.2),
-              //     borderRadius: BorderRadius.circular(8),
-              //   ),
-              //   child: ListTile(
-              //     leading: Container(
-              //       width: 40,
-              //       height: 40,
-              //       decoration: BoxDecoration(
-              //         borderRadius: BorderRadius.circular(100),
-              //       ),
-              //       child: const Icon(
-              //         Icons.work,
-              //         color: tBottomNavigation,
-              //       ),
-              //     ),
-              //     title: Text(
-              //       'Professional Experience',
-              //       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              //             fontWeight: FontWeight.bold,
-              //           ),
-              //     ),
-              //     trailing: GestureDetector(
-              //       onTap: () {
-              //         Navigator.of(context).push(
-              //           MaterialPageRoute(
-              //             builder: (context) => ListProfessionalPage(),
-              //           ),
-              //         );
-              //       },
-              //       child: Container(
-              //         width: 30,
-              //         height: 30,
-              //         decoration: BoxDecoration(
-              //           borderRadius: BorderRadius.circular(100),
-              //         ),
-              //         child: const Icon(
-              //           Icons.arrow_circle_right_rounded,
-              //           color: tBottomNavigation,
-              //         ),
-              //       ),
-              //     ),
-              //   ),
-              // ),
-              // Container(
-              //   padding: const EdgeInsets.only(top: 10),
-              //   child: Divider(
-              //     thickness: 1,
-              //     color: Colors.blueGrey[200],
-              //   ),
-              // ),
               Text(
                 'Top Skill',
                 style: Theme.of(context)
@@ -471,7 +368,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             builder: (context) => const ChangePasswordPage()));
         break;
       case 1:
-        developerController.revokeToken();
+        developerController.revokeToken(context);
         // SharedPreferences.getInstance().then((preferences) {
         //   preferences.clear();
         Navigator.of(context).pushAndRemoveUntil(
@@ -482,5 +379,14 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
         break;
     }
+  }
+
+  String formatDate(String? date) {
+    if (date == null) {
+      return '';
+    }
+    final dateTime = DateTime.parse(date);
+    final formattedDate = DateFormat('yyyy-MM-dd').format(dateTime);
+    return formattedDate;
   }
 }

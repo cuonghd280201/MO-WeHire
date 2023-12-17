@@ -33,7 +33,7 @@ class _ListProjectDevState extends State<ListProjectDev> {
   }
 
   void _searchProjects() {
-    projectController.searchProject(null, [8, 9, 10, 11], searchQuery);
+    projectController.searchProject(context, null, [8, 9, 10, 11], searchQuery);
   }
 
   void _clearSearch() {
@@ -132,10 +132,10 @@ class _ListProjectDevState extends State<ListProjectDev> {
   Widget buildStaticYardList() {
     return FutureBuilder<List<Project>>(
       future: searchQuery.isEmpty
-          ? projectController.fetchProjectList(
+          ? projectController.fetchProjectList(context,
               [8, 9, 10, 11]) // Fetch all projects when no search query
-          : projectController.searchProject(
-              null, [8, 9, 10, 11], searchQuery), // Use searched projects
+          : projectController.searchProject(context, null, [8, 9, 10, 11],
+              searchQuery), // Use searched projects
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(

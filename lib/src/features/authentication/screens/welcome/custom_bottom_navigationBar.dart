@@ -39,7 +39,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
             ),
             BottomNavigationBarItem(
               icon: FutureBuilder<int>(
-                future: hiringController.countNotification(),
+                future: hiringController.countNotification(context),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.done) {
                     return badges.Badge(

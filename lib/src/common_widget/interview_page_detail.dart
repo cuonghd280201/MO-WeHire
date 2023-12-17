@@ -35,9 +35,15 @@ class _InterviewPageDetailState extends State<InterviewPageDetail> {
     fetchData();
   }
 
+  @override
+  void dispose() {
+    mounted = true;
+    super.dispose();
+  }
+
   Future<void> fetchData() async {
-    final interviewFetch =
-        await interviewController.fetchInterviewById(widget.interviewId);
+    final interviewFetch = await interviewController.fetchInterviewById(
+        context, widget.interviewId);
     if (mounted) {
       setState(() {
         interviewList = interviewFetch;
@@ -75,7 +81,7 @@ class _InterviewPageDetailState extends State<InterviewPageDetail> {
                   color: Colors.white,
                   borderRadius: BorderRadius.all(Radius.circular(30)),
                 ),
-                height: 600,
+                height: 1000,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -114,7 +120,20 @@ class _InterviewPageDetailState extends State<InterviewPageDetail> {
                           children: [
                             Container(
                               decoration: BoxDecoration(
-                                color: tBottomNavigation,
+                                color: () {
+                                  switch (interviewList?.statusString) {
+                                    case 'Approved':
+                                      return tBottomNavigation;
+                                    case 'Waiting Approval':
+                                      return Colors.orangeAccent;
+                                    case 'Completed':
+                                      return Colors.blueAccent;
+                                    case 'Cancelled':
+                                      return Colors.black;
+                                    default:
+                                      return Colors.grey;
+                                  }
+                                }(),
                                 borderRadius: BorderRadius.circular(
                                     20), // Optional: Set border radius
                               ),
@@ -250,8 +269,8 @@ class _InterviewPageDetailState extends State<InterviewPageDetail> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        SizedBox(
-                          child: const Text(
+                        const SizedBox(
+                          child: Text(
                             "Post Time",
                             style: TextStyle(
                               fontSize: 15,
@@ -314,8 +333,8 @@ class _InterviewPageDetailState extends State<InterviewPageDetail> {
                       height: 20,
                     ),
                     if (interviewList?.statusString == "Approved")
-                      SizedBox(
-                        child: const Text(
+                      const SizedBox(
+                        child: Text(
                           "Link Meet",
                           style: TextStyle(
                             fontSize: 15,
@@ -326,7 +345,7 @@ class _InterviewPageDetailState extends State<InterviewPageDetail> {
                       ),
                     SizedBox(
                       child: Text(
-                        '${interviewList?.meetingLink}',
+                        '${interviewList?.meetingUrl}',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               decoration: TextDecoration.underline,
                               fontWeight: FontWeight.bold,
@@ -392,12 +411,13 @@ class _InterviewPageDetailState extends State<InterviewPageDetail> {
                                     onPressed: () async {
                                       final approvalSuccess =
                                           await interview.approvedInterview(
+                                              context,
                                               interviewList!.interviewId);
 
                                       if (approvalSuccess) {
                                         final updatedInterview =
                                             await interviewController
-                                                .fetchInterviewById(
+                                                .fetchInterviewById(context,
                                                     widget.interviewId);
 
                                         setState(() {
@@ -487,13 +507,14 @@ class _InterviewPageDetailState extends State<InterviewPageDetail> {
                                       String reason = reasonController.text;
                                       final rejectSuccess =
                                           await interview.rejectInterview(
+                                              context,
                                               interviewList!.interviewId,
                                               reason);
 
                                       if (rejectSuccess) {
                                         final updatedInterview =
                                             await interviewController
-                                                .fetchInterviewById(
+                                                .fetchInterviewById(context,
                                                     widget.interviewId);
 
                                         setState(() {

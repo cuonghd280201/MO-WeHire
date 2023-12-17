@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:motion_toast/motion_toast.dart';
 import 'package:we_hire/src/constants/colors.dart';
@@ -23,7 +22,7 @@ class _EditProfessionalPageState extends State<EditProfessionalPage> {
     super.initState();
 
     hiringController
-        .fetchProfessionalExperienceById()
+        .fetchProfessionalExperienceById(context)
         .then((professionalExperience) {
       setState(() {
         professionalExperienceList = professionalExperience;
@@ -269,6 +268,7 @@ class _EditProfessionalPageState extends State<EditProfessionalPage> {
                 String description = descriptionController.text;
 
                 hiringController.editProfessionalExperience(
+                    context,
                     professionalExperienceList!.professionalExperienceId,
                     jobName,
                     companyName,

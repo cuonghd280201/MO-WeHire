@@ -19,6 +19,8 @@ class PostEducationPage extends StatefulWidget {
 }
 
 class _PostEducationPageState extends State<PostEducationPage> {
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   var hiringController = DeveloperController(RequestRepository());
 
   TextEditingController majorController = TextEditingController();
@@ -28,6 +30,42 @@ class _PostEducationPageState extends State<PostEducationPage> {
   TextEditingController descriptionController = TextEditingController();
 
   String genderSelected = "male";
+
+  String? validateMajor(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter your major';
+    }
+    return null;
+  }
+
+  String? validateSchool(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter your school';
+    }
+    return null;
+  }
+
+  String? validateStart(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter  start date';
+    }
+    // You can add more validation for the phone number if needed
+    return null;
+  }
+
+  String? validateEnd(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter end date';
+    }
+    return null;
+  }
+
+  String? validateDescription(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter a description';
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,302 +87,314 @@ class _PostEducationPageState extends State<PostEducationPage> {
         centerTitle: true,
       ),
       body: SingleChildScrollView(
-          child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          const SizedBox(
-            height: 40,
-          ),
-          Center(
-            child: Text(
-              'Please in your information',
-              style: Theme.of(context)
-                  .textTheme
-                  .headlineSmall
-                  ?.copyWith(fontWeight: FontWeight.bold),
+          child: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            const SizedBox(
+              height: 40,
             ),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-            child: TextFormField(
-              obscureText: false,
-              style: const TextStyle(
-                color: Colors.black,
+            Center(
+              child: Text(
+                'Please in your information',
+                style: Theme.of(context)
+                    .textTheme
+                    .headlineSmall
+                    ?.copyWith(fontWeight: FontWeight.bold),
               ),
-              textAlign: TextAlign.center,
-              controller: majorController,
-              cursorColor: Colors.white,
-              decoration: const InputDecoration(
-                  isDense: true,
-                  labelStyle: TextStyle(
-                    color: headerDashboard,
-                    fontSize: 15.0,
-                  ),
-                  prefixIcon: Icon(
-                    Icons.badge_rounded,
-                    color: tBottomNavigation,
-                  ),
-                  focusColor: Colors.white,
-                  hintText: "Enter Major Name",
-                  hintStyle: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 15.0,
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                  border: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black)),
-                  contentPadding: EdgeInsets.only(top: 15)),
             ),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-            child: TextFormField(
-              obscureText: false,
-              style: const TextStyle(
-                color: Colors.black,
+            const SizedBox(
+              height: 10,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+              child: TextFormField(
+                obscureText: false,
+                style: const TextStyle(
+                  color: Colors.black,
+                ),
+                textAlign: TextAlign.center,
+                controller: majorController,
+                cursorColor: Colors.white,
+                decoration: const InputDecoration(
+                    isDense: true,
+                    labelStyle: TextStyle(
+                      color: headerDashboard,
+                      fontSize: 15.0,
+                    ),
+                    prefixIcon: Icon(
+                      Icons.badge_rounded,
+                      color: tBottomNavigation,
+                    ),
+                    focusColor: Colors.white,
+                    hintText: "Enter Major Name",
+                    hintStyle: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 15.0,
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
+                    border: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black)),
+                    contentPadding: EdgeInsets.only(top: 15)),
+                validator: validateMajor,
               ),
-              textAlign: TextAlign.center,
-              controller: schoolController,
-              cursorColor: Colors.white,
-              decoration: const InputDecoration(
-                  isDense: true,
-                  labelStyle: TextStyle(
-                    color: headerDashboard,
-                    fontSize: 15.0,
-                  ),
-                  prefixIcon: Icon(
-                    Icons.home_filled,
-                    color: tBottomNavigation,
-                  ),
-                  focusColor: Colors.white,
-                  hintText: "Enter School Name",
-                  hintStyle: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 15.0,
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                  border: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black)),
-                  contentPadding: EdgeInsets.only(top: 15)),
             ),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-            child: TextFormField(
-              obscureText: false,
-              style: const TextStyle(
-                color: Colors.black,
+            const SizedBox(
+              height: 10,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+              child: TextFormField(
+                obscureText: false,
+                style: const TextStyle(
+                  color: Colors.black,
+                ),
+                textAlign: TextAlign.center,
+                controller: schoolController,
+                cursorColor: Colors.white,
+                decoration: const InputDecoration(
+                    isDense: true,
+                    labelStyle: TextStyle(
+                      color: headerDashboard,
+                      fontSize: 15.0,
+                    ),
+                    prefixIcon: Icon(
+                      Icons.home_filled,
+                      color: tBottomNavigation,
+                    ),
+                    focusColor: Colors.white,
+                    hintText: "Enter School Name",
+                    hintStyle: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 15.0,
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
+                    border: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black)),
+                    contentPadding: EdgeInsets.only(top: 15)),
+                validator: validateSchool,
               ),
-              textAlign: TextAlign.center,
-              controller: descriptionController,
-              cursorColor: Colors.white,
-              decoration: const InputDecoration(
-                  isDense: true,
-                  labelStyle: TextStyle(
-                    color: headerDashboard,
-                    fontSize: 15.0,
-                  ),
-                  prefixIcon: Icon(
-                    Icons.broadcast_on_home,
-                    color: tBottomNavigation,
-                  ),
-                  focusColor: Colors.white,
-                  hintText: "Enter your description",
-                  hintStyle: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 15.0,
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                  border: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black)),
-                  contentPadding: EdgeInsets.only(top: 15)),
             ),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-            child: TextFormField(
-              keyboardType: TextInputType.emailAddress,
-              obscureText: false,
-              style: const TextStyle(
-                color: Colors.black,
+            const SizedBox(
+              height: 10,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+              child: TextFormField(
+                obscureText: false,
+                style: const TextStyle(
+                  color: Colors.black,
+                ),
+                textAlign: TextAlign.center,
+                controller: descriptionController,
+                cursorColor: Colors.white,
+                decoration: const InputDecoration(
+                    isDense: true,
+                    labelStyle: TextStyle(
+                      color: headerDashboard,
+                      fontSize: 15.0,
+                    ),
+                    prefixIcon: Icon(
+                      Icons.broadcast_on_home,
+                      color: tBottomNavigation,
+                    ),
+                    focusColor: Colors.white,
+                    hintText: "Enter your description",
+                    hintStyle: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 15.0,
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
+                    border: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black)),
+                    contentPadding: EdgeInsets.only(top: 15)),
+                validator: validateDescription,
               ),
-              textAlign: TextAlign.center,
-              controller: startController,
-              cursorColor: Colors.white,
-              decoration: const InputDecoration(
-                  isDense: true,
-                  labelStyle: TextStyle(
-                    color: headerDashboard,
-                    fontSize: 15.0,
-                  ),
-                  prefixIcon: Icon(
-                    Icons.calendar_month,
-                    color: tBottomNavigation,
-                  ),
-                  focusColor: Colors.white,
-                  hintText: "Enter you start ",
-                  hintStyle: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 15.0,
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                  border: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black)),
-                  contentPadding: EdgeInsets.only(top: 15)),
-              onTap: () async {
-                DateTime date = DateTime(1900);
-                FocusScope.of(context).requestFocus(FocusNode());
-                date = (await showDatePicker(
-                    context: context,
-                    initialDate: DateTime.now(),
-                    firstDate: DateTime(1900),
-                    lastDate: DateTime(2100)))!;
-                String dateFormatter = date.toIso8601String();
-                DateTime dt = DateTime.parse(dateFormatter);
-                var formatter = DateFormat('yyyy-MM-dd');
-                startController.text = formatter.format(dt);
-              },
             ),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-            child: TextFormField(
-              keyboardType: TextInputType.emailAddress,
-              obscureText: false,
-              style: const TextStyle(
-                color: Colors.black,
+            const SizedBox(
+              height: 10,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+              child: TextFormField(
+                keyboardType: TextInputType.emailAddress,
+                obscureText: false,
+                style: const TextStyle(
+                  color: Colors.black,
+                ),
+                textAlign: TextAlign.center,
+                controller: startController,
+                cursorColor: Colors.white,
+                decoration: const InputDecoration(
+                    isDense: true,
+                    labelStyle: TextStyle(
+                      color: headerDashboard,
+                      fontSize: 15.0,
+                    ),
+                    prefixIcon: Icon(
+                      Icons.calendar_month,
+                      color: tBottomNavigation,
+                    ),
+                    focusColor: Colors.white,
+                    hintText: "Enter you start ",
+                    hintStyle: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 15.0,
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
+                    border: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black)),
+                    contentPadding: EdgeInsets.only(top: 15)),
+                validator: validateStart,
+                onTap: () async {
+                  DateTime date = DateTime(1900);
+                  FocusScope.of(context).requestFocus(FocusNode());
+                  date = (await showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime(1900),
+                      lastDate: DateTime(2100)))!;
+                  String dateFormatter = date.toIso8601String();
+                  DateTime dt = DateTime.parse(dateFormatter);
+                  var formatter = DateFormat('yyyy-MM-dd');
+                  startController.text = formatter.format(dt);
+                },
               ),
-              textAlign: TextAlign.center,
-              controller: endController,
-              cursorColor: Colors.white,
-              decoration: const InputDecoration(
-                  isDense: true,
-                  labelStyle: TextStyle(
-                    color: headerDashboard,
-                    fontSize: 15.0,
-                  ),
-                  prefixIcon: Icon(
-                    Icons.calendar_month,
-                    color: tBottomNavigation,
-                  ),
-                  focusColor: Colors.white,
-                  hintText: "Enter you end ",
-                  hintStyle: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 15.0,
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                  border: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black)),
-                  contentPadding: EdgeInsets.only(top: 15)),
-              onTap: () async {
-                DateTime date = DateTime(1900);
-                FocusScope.of(context).requestFocus(FocusNode());
-                date = (await showDatePicker(
-                    context: context,
-                    initialDate: DateTime.now(),
-                    firstDate: DateTime(1900),
-                    lastDate: DateTime(2100)))!;
-                String dateFormatter = date.toIso8601String();
-                DateTime dt = DateTime.parse(dateFormatter);
-                var formatter = DateFormat('yyyy-MM-dd');
-                endController.text = formatter.format(dt);
-              },
             ),
-          ),
-          const SizedBox(
-            height: 25,
-          ),
-          SizedBox(
-            height: 60,
-            child: MaterialButton(
-              onPressed: () async {
-                String majorName = majorController.text;
-                String schoolName = schoolController.text;
-                String startDate = startController.text;
-                String endDate = endController.text;
-                String description = descriptionController.text;
+            const SizedBox(
+              height: 10,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+              child: TextFormField(
+                keyboardType: TextInputType.emailAddress,
+                obscureText: false,
+                style: const TextStyle(
+                  color: Colors.black,
+                ),
+                textAlign: TextAlign.center,
+                controller: endController,
+                cursorColor: Colors.white,
+                decoration: const InputDecoration(
+                    isDense: true,
+                    labelStyle: TextStyle(
+                      color: headerDashboard,
+                      fontSize: 15.0,
+                    ),
+                    prefixIcon: Icon(
+                      Icons.calendar_month,
+                      color: tBottomNavigation,
+                    ),
+                    focusColor: Colors.white,
+                    hintText: "Enter you end ",
+                    hintStyle: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 15.0,
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
+                    border: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black)),
+                    contentPadding: EdgeInsets.only(top: 15)),
+                validator: validateEnd,
+                onTap: () async {
+                  DateTime date = DateTime(1900);
+                  FocusScope.of(context).requestFocus(FocusNode());
+                  date = (await showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime(1900),
+                      lastDate: DateTime(2100)))!;
+                  String dateFormatter = date.toIso8601String();
+                  DateTime dt = DateTime.parse(dateFormatter);
+                  var formatter = DateFormat('yyyy-MM-dd');
+                  endController.text = formatter.format(dt);
+                },
+              ),
+            ),
+            const SizedBox(
+              height: 25,
+            ),
+            SizedBox(
+              height: 60,
+              child: MaterialButton(
+                onPressed: () async {
+                  if (_formKey.currentState?.validate() ?? false) {
+                    String majorName = majorController.text;
+                    String schoolName = schoolController.text;
+                    String startDate = startController.text;
+                    String endDate = endController.text;
+                    String description = descriptionController.text;
 
-                try {
-                  final bool success = await hiringController.postEducation(
-                    majorName,
-                    schoolName,
-                    startDate,
-                    endDate,
-                    description,
-                  );
+                    try {
+                      final bool success = await hiringController.postEducation(
+                        context,
+                        majorName,
+                        schoolName,
+                        startDate,
+                        endDate,
+                        description,
+                      );
 
-                  if (success) {
-                    MotionToast.success(
-                      description:
-                          const Text("Has successfully created education"),
-                    ).show(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const ListEducationPage()),
-                    );
-                  } else {
-                    Fluttertoast.showToast(
-                      msg: "Failed to post education.",
-                      toastLength: Toast.LENGTH_SHORT,
-                      gravity: ToastGravity.BOTTOM,
-                      timeInSecForIosWeb: 1,
-                      backgroundColor: const Color.fromARGB(255, 255, 0, 0),
-                      textColor: const Color.fromARGB(255, 0, 0, 0),
-                      fontSize: 16.0,
-                    );
+                      if (success) {
+                        MotionToast.success(
+                          description:
+                              const Text("Has successfully created education"),
+                        ).show(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const ListEducationPage()),
+                        );
+                      } else {
+                        Fluttertoast.showToast(
+                          msg: "Failed to post education.",
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          timeInSecForIosWeb: 1,
+                          backgroundColor: const Color.fromARGB(255, 255, 0, 0),
+                          textColor: const Color.fromARGB(255, 0, 0, 0),
+                          fontSize: 16.0,
+                        );
+                      }
+                    } catch (e) {
+                      MotionToast.warning(
+                        description: const Text("You cannot create education"),
+                      ).show(context);
+                    }
                   }
-                } catch (e) {
-                  MotionToast.warning(
-                    description: const Text("You cannot create education"),
-                  ).show(context);
-                }
-              },
-              elevation: 5.0,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: tBottomNavigation,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                constraints: const BoxConstraints(maxHeight: 40, maxWidth: 100),
-                alignment: Alignment.center,
-                child: const Text(
-                  'Save',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
+                },
+                elevation: 5.0,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: tBottomNavigation,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  constraints:
+                      const BoxConstraints(maxHeight: 40, maxWidth: 100),
+                  alignment: Alignment.center,
+                  child: const Text(
+                    'Save',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                    ),
                   ),
                 ),
               ),
-            ),
-          )
-        ],
+            )
+          ],
+        ),
       )),
     );
   }

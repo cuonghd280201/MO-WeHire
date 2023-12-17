@@ -109,7 +109,7 @@ class _NotificationDevPageState extends State<NotificationDevPage> {
 
   Widget buildStaticYardList() {
     return FutureBuilder<List<NotificationDev>>(
-        future: notificationController.fetchNotification(),
+        future: notificationController.fetchNotification(context),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
@@ -124,7 +124,7 @@ class _NotificationDevPageState extends State<NotificationDevPage> {
           return Column(
             children: [
               SizedBox(
-                height: 600,
+                height: 800,
                 child: ListView.builder(
                   scrollDirection: Axis.vertical,
                   physics: const BouncingScrollPhysics(),

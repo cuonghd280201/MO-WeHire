@@ -26,7 +26,7 @@ class _EditEducationPageState extends State<EditEducationPage> {
   void initState() {
     super.initState();
 
-    hiringController.fetchEduationById().then((education) {
+    hiringController.fetchEduationById(context).then((education) {
       setState(() {
         educationList = education;
         majorController.text = educationList?.majorName ?? '';
@@ -223,7 +223,7 @@ class _EditEducationPageState extends State<EditEducationPage> {
                     context: context,
                     initialDate: DateTime.now(),
                     firstDate: DateTime(1900),
-                    lastDate: DateTime(2100)))!;
+                    lastDate: DateTime.now()))!;
                 String dateFormatter = date.toIso8601String();
                 DateTime dt = DateTime.parse(dateFormatter);
                 var formatter = DateFormat('yyyy-MM-dd');
@@ -274,7 +274,7 @@ class _EditEducationPageState extends State<EditEducationPage> {
                     context: context,
                     initialDate: DateTime.now(),
                     firstDate: DateTime(1900),
-                    lastDate: DateTime(2100)))!;
+                    lastDate: DateTime.now()))!;
                 String dateFormatter = date.toIso8601String();
                 DateTime dt = DateTime.parse(dateFormatter);
                 var formatter = DateFormat('yyyy-MM-dd');
@@ -295,8 +295,14 @@ class _EditEducationPageState extends State<EditEducationPage> {
                 String endDate = endController.text;
                 String description = descriptionController.text;
 
-                hiringController.editEducation(educationList!.educationId,
-                    majorName, schoolName, startDate, endDate, description);
+                hiringController.editEducation(
+                    context,
+                    educationList!.educationId,
+                    majorName,
+                    schoolName,
+                    startDate,
+                    endDate,
+                    description);
                 Navigator.of(context).pop();
                 Navigator.push(
                   context,

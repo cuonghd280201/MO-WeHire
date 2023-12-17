@@ -35,7 +35,7 @@ class _MainHomePageState extends State<MainHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    hiringController.unNewNotification();
+    hiringController.unNewNotification(context);
     return Scaffold(
       bottomNavigationBar: Container(
           margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -55,7 +55,7 @@ class _MainHomePageState extends State<MainHomePage> {
                 setState(() {
                   currentIndex = index;
                   if (index == 1) {
-                    hiringController.unNewNotification();
+                    hiringController.unNewNotification(context);
                   }
                 });
               },
@@ -68,7 +68,7 @@ class _MainHomePageState extends State<MainHomePage> {
                 ),
                 BottomNavigationBarItem(
                   icon: FutureBuilder<int>(
-                    future: hiringController.countNotification(),
+                    future: hiringController.countNotification(context),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.done) {
                         return badges.Badge(

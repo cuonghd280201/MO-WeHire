@@ -5,7 +5,6 @@ import 'package:we_hire/src/constants/colors.dart';
 import 'package:we_hire/src/features/authentication/controllers/developer_controller.dart';
 import 'package:we_hire/src/features/authentication/models/professtional_experience.dart';
 import 'package:we_hire/src/features/authentication/repository/request_repository.dart';
-import 'package:we_hire/src/features/authentication/screens/my_profile/dev_profile.dart';
 import 'package:we_hire/src/features/authentication/screens/my_profile/post_professional.dart';
 import 'package:we_hire/src/features/authentication/screens/my_profile/setting_dev.dart';
 import 'package:we_hire/src/features/authentication/screens/my_profile/widget_profile/professional_card.dart';
@@ -115,7 +114,7 @@ class _ListProfessionalPageState extends State<ListProfessionalPage> {
 
   Widget buildStaticYardList() {
     return FutureBuilder<List<ProfessionalExperience>>(
-        future: hiringController.fetchProfessionalExperience(),
+        future: hiringController.fetchProfessionalExperience(context),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(

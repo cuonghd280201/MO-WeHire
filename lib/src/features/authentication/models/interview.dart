@@ -7,11 +7,12 @@ class Interview {
   String? startTime;
   String? endTime;
   int? numOfInterviewee;
-  String? meetingLink;
-  String? outlookLink;
+  String? meetingUrl;
+  String? outlookUrl;
   String? statusString;
   String? postedTime;
   String? rejectionReason;
+  String? dateOfInterviewMMM;
 
   Interview({
     this.interviewId,
@@ -23,10 +24,11 @@ class Interview {
     this.startTime,
     this.endTime,
     this.numOfInterviewee,
-    this.meetingLink,
-    this.outlookLink,
+    this.meetingUrl,
+    this.outlookUrl,
     this.postedTime,
     this.rejectionReason,
+    this.dateOfInterviewMMM,
   });
 
   factory Interview.fromJson(Map<String, dynamic> jsonInput) {
@@ -38,12 +40,13 @@ class Interview {
       dateOfInterview: jsonInput['dateOfInterview'],
       statusString: jsonInput['statusString'],
       numOfInterviewee: jsonInput['numOfInterviewee'],
-      outlookLink: jsonInput['outlookLink'],
+      outlookUrl: jsonInput['outlookUrl'],
       startTime: jsonInput['startTime'],
       endTime: jsonInput['endTime'],
-      meetingLink: jsonInput['meetingLink'],
+      meetingUrl: jsonInput['meetingUrl'],
       postedTime: jsonInput['postedTime'],
       rejectionReason: jsonInput['rejectionReason'],
+      dateOfInterviewMMM: jsonInput['dateOfInterviewMMM'],
     );
   }
 }

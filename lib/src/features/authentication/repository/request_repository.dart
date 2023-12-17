@@ -1,4 +1,5 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
 import 'package:we_hire/src/features/authentication/models/education.dart';
 import 'package:we_hire/src/features/authentication/models/interview.dart';
 import 'package:we_hire/src/features/authentication/models/notification.dart';
@@ -15,13 +16,58 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:we_hire/src/constants/values.dart';
 import 'package:we_hire/src/features/authentication/models/new_request.dart';
 import 'package:http/http.dart' as http;
+import 'package:we_hire/src/features/authentication/screens/login/test_login.dart';
 
 class RequestRepository implements Repository {
-  @override
-  Future<List<HiringNew>> getHiring() async {
+  // @override
+  // Future<List<HiringNew>> getHiring() async {
+  //   final SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   final String? accessToken = prefs.getString('accessToken');
+  //   int? devId = prefs.getInt('devId');
+  //   try {
+  //     final String getAreasUrl = '$apiServer/HiringRequest/ByDev?devId=$devId';
+
+  //     final http.Response response = await http.get(
+  //       Uri.parse(getAreasUrl),
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         "Authorization": "Bearer $accessToken"
+  //       },
+  //     );
+  //     if (response.statusCode == 200) {
+  //       final data = json.decode(response.body);
+  //       final List<dynamic> requestData = data['data'];
+  //       return requestData
+  //           .map((data) => HiringNew.fromJson(data))
+  //           .toList()
+  //           .cast<HiringNew>();
+  //     }
+  //   } catch (e) {
+  //     throw Exception(e);
+  //   }
+
+  //   return [];
+  // }
+
+  Future<List<HiringNew>> getHiring(
+    BuildContext context,
+  ) async {
+    // Check and refresh token
+    final bool tokenIsValid = await checkAndRefreshToken(context);
+
+    if (!tokenIsValid) {
+      // Token is not valid, handle accordingly (e.g., throw an exception, return an empty list)
+      print('Access token is not valid. Unable to fetch hiring requests.');
+      return [];
+    }
+
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String? token = prefs.getString('token');
-    int? devId = prefs.getInt('devId');
+    final int? devId = prefs.getInt('devId');
+
+    if (devId == null) {
+      throw Exception('Missing developer ID');
+    }
+
     try {
       final String getAreasUrl = '$apiServer/HiringRequest/ByDev?devId=$devId';
 
@@ -29,8 +75,10 @@ class RequestRepository implements Repository {
         Uri.parse(getAreasUrl),
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${prefs.getString('accessToken')}',
         },
       );
+
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final List<dynamic> requestData = data['data'];
@@ -38,16 +86,27 @@ class RequestRepository implements Repository {
             .map((data) => HiringNew.fromJson(data))
             .toList()
             .cast<HiringNew>();
+      } else {
+        print('Request failed with status: ${response.statusCode}');
       }
     } catch (e) {
-      throw Exception(e);
+      print('Error in getHiring: $e');
+      throw Exception('Failed to get hiring requests');
     }
 
     return [];
   }
 
   @override
-  Future<bool> sendupdateHiringData(int? requestId) async {
+  Future<bool> sendupdateHiringData(
+      BuildContext context, int? requestId) async {
+    final bool tokenIsValid = await checkAndRefreshToken(context);
+
+    if (!tokenIsValid) {
+      // Token is not valid, handle accordingly (e.g., throw an exception, return an empty list)
+      print('Access token is not valid. Unable to fetch hiring requests.');
+      return false;
+    }
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? accessToken = prefs.getString('accessToken');
     int? devId = prefs.getInt('devId');
@@ -64,7 +123,7 @@ class RequestRepository implements Repository {
       body: json.encode(requestData),
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer $accessToken"
+        'Authorization': 'Bearer ${prefs.getString('accessToken')}',
       },
     );
 
@@ -75,7 +134,14 @@ class RequestRepository implements Repository {
   }
 
   @override
-  Future<bool> rejectHiringData(int? requestId) async {
+  Future<bool> rejectHiringData(BuildContext context, int? requestId) async {
+    final bool tokenIsValid = await checkAndRefreshToken(context);
+
+    if (!tokenIsValid) {
+      // Token is not valid, handle accordingly (e.g., throw an exception, return an empty list)
+      print('Access token is not valid. Unable to fetch hiring requests.');
+      return false;
+    }
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? accessToken = prefs.getString('accessToken');
     int? devId = prefs.getInt('devId');
@@ -92,7 +158,7 @@ class RequestRepository implements Repository {
       body: json.encode(requestData),
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer $accessToken"
+        'Authorization': 'Bearer ${prefs.getString('accessToken')}',
       },
     );
 
@@ -103,14 +169,23 @@ class RequestRepository implements Repository {
   }
 
   @override
-  Future<List<Interview>> getInterview(int? devId) async {
+  Future<List<Interview>> getInterview(BuildContext context, int? devId) async {
+    final bool tokenIsValid = await checkAndRefreshToken(context);
+
+    if (!tokenIsValid) {
+      // Token is not valid, handle accordingly (e.g., throw an exception, return an empty list)
+      print('Access token is not valid. Unable to fetch hiring requests.');
+      return [];
+    }
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? accessToken = prefs.getString('accessToken');
     devId = prefs.getInt('devId');
     final uri = Uri.parse("$apiServer/Interview/Dev/$devId");
     final response = await http.get(
       uri,
-      headers: {"Authorization": "Bearer $accessToken"},
+      headers: {
+        'Authorization': 'Bearer ${prefs.getString('accessToken')}',
+      },
     );
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -124,34 +199,104 @@ class RequestRepository implements Repository {
     return [];
   }
 
-  @override
-  Future<User> getUser() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String? accessToken = prefs.getString('accessToken');
-    int? devId = prefs.getInt('devId');
-    final uri = Uri.parse("$apiServer/Developer/$devId");
-    final response = await http.get(
-      uri,
-      headers: {"Authorization": "Bearer $accessToken"},
+  void _navigateToLoginScreen(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: const Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Center(
+                child: Text(
+                  "Notification",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              SizedBox(height: 10),
+              Text(
+                  "Notice that the login session has expired. Please log in again"),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (context) => const TestLoginScreen(),
+                  ),
+                );
+              },
+              child: const Text("OK"),
+            ),
+          ],
+        );
+      },
     );
+  }
 
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> userData = json.decode(response.body);
-      return User.fromJson(userData['data']);
-    } else {
-      throw Exception('Failed to load user data');
+  @override
+  Future<User?> getUser(BuildContext context) async {
+    try {
+      final bool tokenIsValid = await checkAndRefreshToken(context);
+
+      if (!tokenIsValid) {
+        _navigateToLoginScreen(context);
+        return null; // Return null or a default user, depending on your requirements
+      }
+
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final String? accessToken = prefs.getString('accessToken');
+      int? devId = prefs.getInt('devId');
+
+      if (accessToken == null || devId == null) {
+        _navigateToLoginScreen(context);
+        return null; // Return null or a default user, depending on your requirements
+      }
+
+      final uri = Uri.parse("$apiServer/Developer/$devId");
+      final response = await http.get(
+        uri,
+        headers: {'Authorization': 'Bearer $accessToken'},
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> userData = json.decode(response.body);
+        return User.fromJson(userData['data']);
+      } else {
+        _navigateToLoginScreen(context);
+        return null; // Return null or a default user, depending on your requirements
+      }
+    } catch (e) {
+      // Handle exceptions as needed
+      print('Exception in getUser: $e');
+      return null; // Return null or a default user, depending on your requirements
     }
   }
 
   @override
-  Future<List<Education>> getEducation() async {
+  Future<List<Education>> getEducation(
+    BuildContext context,
+  ) async {
+    final bool tokenIsValid = await checkAndRefreshToken(context);
+
+    if (!tokenIsValid) {
+      // Token is not valid, handle accordingly (e.g., throw an exception, return an empty list)
+      print('Access token is not valid. Unable to fetch hiring requests.');
+      return [];
+    }
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? accessToken = prefs.getString('accessToken');
     int? devId = prefs.getInt('devId');
     final uri = Uri.parse("$apiServer/Education/$devId");
     final response = await http.get(
       uri,
-      headers: {"Authorization": "Bearer $accessToken"},
+      headers: {
+        'Authorization': 'Bearer ${prefs.getString('accessToken')}',
+      },
     );
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -166,14 +311,25 @@ class RequestRepository implements Repository {
   }
 
   @override
-  Future<List<ProfessionalExperience>> getProfessionalExperience() async {
+  Future<List<ProfessionalExperience>> getProfessionalExperience(
+    BuildContext context,
+  ) async {
+    final bool tokenIsValid = await checkAndRefreshToken(context);
+
+    if (!tokenIsValid) {
+      // Token is not valid, handle accordingly (e.g., throw an exception, return an empty list)
+      print('Access token is not valid. Unable to fetch hiring requests.');
+      return [];
+    }
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? accessToken = prefs.getString('accessToken');
     int? devId = prefs.getInt('devId');
     final uri = Uri.parse("$apiServer/ProfessionalExperience/$devId");
     final response = await http.get(
       uri,
-      headers: {"Authorization": "Bearer $accessToken"},
+      headers: {
+        'Authorization': 'Bearer ${prefs.getString('accessToken')}',
+      },
     );
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -188,8 +344,15 @@ class RequestRepository implements Repository {
   }
 
   @override
-  Future<bool> postEducation(String majorName, String schoolName, startDate,
-      String endDate, String description) async {
+  Future<bool> postEducation(BuildContext context, String majorName,
+      String schoolName, startDate, String endDate, String description) async {
+    final bool tokenIsValid = await checkAndRefreshToken(context);
+
+    if (!tokenIsValid) {
+      // Token is not valid, handle accordingly (e.g., throw an exception, return an empty list)
+      print('Access token is not valid. Unable to fetch hiring requests.');
+      return false;
+    }
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? accessToken = prefs.getString('accessToken');
     int? devId = prefs.getInt('devId');
@@ -197,6 +360,7 @@ class RequestRepository implements Repository {
       Uri.parse('$apiServer/Education'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer ${prefs.getString('accessToken')}',
       },
       body: jsonEncode(<String, String>{
         "developerId": '$devId',
@@ -216,8 +380,20 @@ class RequestRepository implements Repository {
   }
 
   @override
-  Future<bool> postProfessionalExperience(String jobName, String companyName,
-      String startDate, String endDate, String description) async {
+  Future<bool> postProfessionalExperience(
+      BuildContext context,
+      String jobName,
+      String companyName,
+      String startDate,
+      String endDate,
+      String description) async {
+    final bool tokenIsValid = await checkAndRefreshToken(context);
+
+    if (!tokenIsValid) {
+      // Token is not valid, handle accordingly (e.g., throw an exception, return an empty list)
+      print('Access token is not valid. Unable to fetch hiring requests.');
+      return false;
+    }
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? accessToken = prefs.getString('accessToken');
     int? devId = prefs.getInt('devId');
@@ -225,6 +401,7 @@ class RequestRepository implements Repository {
       Uri.parse('$apiServer/ProfessionalExperience'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer ${prefs.getString('accessToken')}',
       },
       body: jsonEncode(<String, String>{
         "developerId": '$devId',
@@ -244,14 +421,23 @@ class RequestRepository implements Repository {
   }
 
   @override
-  Future<List<NotificationDev>> getNotification() async {
+  Future<List<NotificationDev>> getNotification(BuildContext context) async {
+    final bool tokenIsValid = await checkAndRefreshToken(context);
+
+    if (!tokenIsValid) {
+      // Token is not valid, handle accordingly (e.g., throw an exception, return an empty list)
+      print('Access token is not valid. Unable to fetch hiring requests.');
+      return [];
+    }
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? accessToken = prefs.getString('accessToken');
     int? userId = prefs.getInt('userId');
     final uri = Uri.parse("$apiServer/Notification/ByUser/$userId");
     final response = await http.get(
       uri,
-      headers: {"Authorization": "Bearer $accessToken"},
+      headers: {
+        'Authorization': 'Bearer ${prefs.getString('accessToken')}',
+      },
     );
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -293,6 +479,7 @@ class RequestRepository implements Repository {
   // }
   @override
   Future<bool> EditUser(
+      BuildContext context,
       String genderId,
       String firstName,
       String lastName,
@@ -300,6 +487,13 @@ class RequestRepository implements Repository {
       String dateOfBirth,
       String summary,
       String filePath) async {
+    final bool tokenIsValid = await checkAndRefreshToken(context);
+
+    if (!tokenIsValid) {
+      // Token is not valid, handle accordingly (e.g., throw an exception, return an empty list)
+      print('Access token is not valid. Unable to fetch hiring requests.');
+      return false;
+    }
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? accessToken = prefs.getString('accessToken');
     int? userId = prefs.getInt('userId');
@@ -324,7 +518,8 @@ class RequestRepository implements Repository {
 
     // Attach access token if needed
     if (accessToken != null) {
-      request.headers['Authorization'] = 'Bearer $accessToken';
+      request.headers['Authorization'] =
+          'Bearer ${prefs.getString('accessToken')}';
     }
     if (filePath.isNotEmpty) {
       var file = await http.MultipartFile.fromPath(
@@ -345,14 +540,25 @@ class RequestRepository implements Repository {
   }
 
   @override
-  Future<User> getUserById() async {
+  Future<User> getUserById(
+    BuildContext context,
+  ) async {
+    final bool tokenIsValid = await checkAndRefreshToken(context);
+
+    if (!tokenIsValid) {
+      // Token is not valid, handle accordingly (e.g., throw an exception, return an empty list)
+      print('Access token is not valid. Unable to fetch hiring requests.');
+      throw Exception('Access token is not valid.');
+    }
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? accessToken = prefs.getString('accessToken');
     int? userId = prefs.getInt('userId');
     final uri = Uri.parse("$apiServer/User/$userId");
     final response = await http.get(
       uri,
-      headers: {"Authorization": "Bearer $accessToken"},
+      headers: {
+        'Authorization': 'Bearer ${prefs.getString('accessToken')}',
+      },
     );
 
     if (response.statusCode == 200) {
@@ -364,8 +570,15 @@ class RequestRepository implements Repository {
   }
 
   @override
-  Future<bool> updatePassword(String currentPassword, String newPassword,
-      String confirmPassword) async {
+  Future<bool> updatePassword(BuildContext context, String currentPassword,
+      String newPassword, String confirmPassword) async {
+    final bool tokenIsValid = await checkAndRefreshToken(context);
+
+    if (!tokenIsValid) {
+      // Token is not valid, handle accordingly (e.g., throw an exception, return an empty list)
+      print('Access token is not valid. Unable to fetch hiring requests.');
+      throw Exception('Access token is not valid.');
+    }
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? accessToken = prefs.getString('accessToken');
     int? userId = prefs.getInt('userId');
@@ -373,6 +586,7 @@ class RequestRepository implements Repository {
       Uri.parse('$apiServer/User/UpdatePassword/$userId'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer ${prefs.getString('accessToken')}',
       },
       body: jsonEncode(<String, String>{
         "currentPassword": currentPassword,
@@ -389,13 +603,22 @@ class RequestRepository implements Repository {
   }
 
   @override
-  Future<HiringNew> getHiringById(int? requestId) async {
+  Future<HiringNew> getHiringById(BuildContext context, int? requestId) async {
+    final bool tokenIsValid = await checkAndRefreshToken(context);
+
+    if (!tokenIsValid) {
+      // Token is not valid, handle accordingly (e.g., throw an exception, return an empty list)
+      print('Access token is not valid. Unable to fetch hiring requests.');
+      throw Exception('Access token is not valid.');
+    }
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? accessToken = prefs.getString('accessToken');
     final uri = Uri.parse("$apiServer/HiringRequest/$requestId");
     final response = await http.get(
       uri,
-      headers: {"Authorization": "Bearer $accessToken"},
+      headers: {
+        'Authorization': 'Bearer ${prefs.getString('accessToken')}',
+      },
     );
 
     if (response.statusCode == 200) {
@@ -407,13 +630,23 @@ class RequestRepository implements Repository {
   }
 
   @override
-  Future<Interview> getInterViewById(int? interviewId) async {
+  Future<Interview> getInterViewById(
+      BuildContext context, int? interviewId) async {
+    final bool tokenIsValid = await checkAndRefreshToken(context);
+
+    if (!tokenIsValid) {
+      // Token is not valid, handle accordingly (e.g., throw an exception, return an empty list)
+      print('Access token is not valid. Unable to fetch hiring requests.');
+      throw Exception('Access token is not valid.');
+    }
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? accessToken = prefs.getString('accessToken');
     final uri = Uri.parse("$apiServer/Interview/$interviewId");
     final response = await http.get(
       uri,
-      headers: {"Authorization": "Bearer $accessToken"},
+      headers: {
+        'Authorization': 'Bearer ${prefs.getString('accessToken')}',
+      },
     );
 
     if (response.statusCode == 200) {
@@ -425,7 +658,14 @@ class RequestRepository implements Repository {
   }
 
   @override
-  Future<int> getCountNotification() async {
+  Future<int> getCountNotification(BuildContext context) async {
+    final bool tokenIsValid = await checkAndRefreshToken(context);
+
+    if (!tokenIsValid) {
+      // Token is not valid, handle accordingly (e.g., throw an exception, return an empty list)
+      print('Access token is not valid. Unable to fetch hiring requests.');
+      throw Exception('Access token is not valid.');
+    }
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? accessToken = prefs.getString('accessToken');
     final int? userId = prefs.getInt('userId');
@@ -434,7 +674,9 @@ class RequestRepository implements Repository {
 
     final response = await http.get(
       uri,
-      headers: {"Authorization": "Bearer $accessToken"},
+      headers: {
+        'Authorization': 'Bearer ${prefs.getString('accessToken')}',
+      },
     );
 
     if (response.statusCode == 200) {
@@ -446,12 +688,12 @@ class RequestRepository implements Repository {
     }
   }
 
-  @override
-  Future<NotificationDev> getNotificationText(String deviceToken, String title,
-      String content, String notificationType, int routeId) {
-    // TODO: implement getNotificationText
-    throw UnimplementedError();
-  }
+  // @override
+  // Future<NotificationDev> getNotificationText(String deviceToken, String title,
+  //     String content, String notificationType, int routeId) {
+  //   // TODO: implement getNotificationText
+  //   throw UnimplementedError();
+  // }
 
   @override
   Future<void> SignIn(String email, String password) async {
@@ -496,6 +738,7 @@ class RequestRepository implements Repository {
       Uri.parse('$apiServer/UserDevice'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer ${prefs.getString('accessToken')}',
       },
       body: jsonEncode(<String, String>{
         "userId": '$userId',
@@ -511,7 +754,14 @@ class RequestRepository implements Repository {
   }
 
   @override
-  Future<bool> approvedInterview(int? interviewId) async {
+  Future<bool> approvedInterview(BuildContext context, int? interviewId) async {
+    final bool tokenIsValid = await checkAndRefreshToken(context);
+
+    if (!tokenIsValid) {
+      // Token is not valid, handle accordingly (e.g., throw an exception, return an empty list)
+      print('Access token is not valid. Unable to fetch hiring requests.');
+      throw Exception('Access token is not valid.');
+    }
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? accessToken = prefs.getString('accessToken');
 
@@ -526,7 +776,7 @@ class RequestRepository implements Repository {
       body: json.encode(requestData),
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer $accessToken"
+        'Authorization': 'Bearer ${prefs.getString('accessToken')}',
       },
     );
 
@@ -538,7 +788,14 @@ class RequestRepository implements Repository {
 
   @override
   Future<bool> rejectInterview(
-      int? interviewId, String? rejectionReason) async {
+      BuildContext context, int? interviewId, String? rejectionReason) async {
+    final bool tokenIsValid = await checkAndRefreshToken(context);
+
+    if (!tokenIsValid) {
+      // Token is not valid, handle accordingly (e.g., throw an exception, return an empty list)
+      print('Access token is not valid. Unable to fetch hiring requests.');
+      throw Exception('Access token is not valid.');
+    }
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? accessToken = prefs.getString('accessToken');
 
@@ -554,7 +811,7 @@ class RequestRepository implements Repository {
       body: json.encode(requestData),
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer $accessToken"
+        'Authorization': 'Bearer ${prefs.getString('accessToken')}',
       },
     );
 
@@ -565,7 +822,16 @@ class RequestRepository implements Repository {
   }
 
   @override
-  Future<User> getDeveloperById() async {
+  Future<User> getDeveloperById(
+    BuildContext context,
+  ) async {
+    final bool tokenIsValid = await checkAndRefreshToken(context);
+
+    if (!tokenIsValid) {
+      // Token is not valid, handle accordingly (e.g., throw an exception, return an empty list)
+      print('Access token is not valid. Unable to fetch hiring requests.');
+      throw Exception('Access token is not valid.');
+    }
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? accessToken = prefs.getString('accessToken');
     int? userId = prefs.getInt('userId');
@@ -574,7 +840,9 @@ class RequestRepository implements Repository {
     final uri = Uri.parse("$apiServer/Developer/$devId");
     final response = await http.get(
       uri,
-      headers: {"Authorization": "Bearer $accessToken"},
+      headers: {
+        'Authorization': 'Bearer ${prefs.getString('accessToken')}',
+      },
     );
 
     if (response.statusCode == 200) {
@@ -586,14 +854,24 @@ class RequestRepository implements Repository {
   }
 
   @override
-  Future<bool> revokeToken() async {
+  Future<bool> revokeToken(
+    BuildContext context,
+  ) async {
+    final bool tokenIsValid = await checkAndRefreshToken(context);
+
+    if (!tokenIsValid) {
+      // Token is not valid, handle accordingly (e.g., throw an exception, return an empty list)
+      print('Access token is not valid. Unable to fetch hiring requests.');
+      return false;
+    }
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? accessToken = prefs.getString('accessToken');
     int? userId = prefs.getInt('userId');
 
     final uri = Uri.parse("$apiServer/Account/Revoke?userId=$userId");
     final Map<String, String> headers = {
-      if (accessToken != null) "Authorization": "Bearer $accessToken",
+      if (accessToken != null)
+        'Authorization': 'Bearer ${prefs.getString('accessToken')}',
     };
 
     final response = await http.delete(
@@ -608,7 +886,16 @@ class RequestRepository implements Repository {
   }
 
   @override
-  Future<bool> deleteUserDevice() async {
+  Future<bool> deleteUserDevice(
+    BuildContext context,
+  ) async {
+    final bool tokenIsValid = await checkAndRefreshToken(context);
+
+    if (!tokenIsValid) {
+      // Token is not valid, handle accordingly (e.g., throw an exception, return an empty list)
+      print('Access token is not valid. Unable to fetch hiring requests.');
+      return false;
+    }
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? accessToken = prefs.getString('accessToken');
     final String? userDeviceId = prefs.getString('userDevice');
@@ -619,7 +906,7 @@ class RequestRepository implements Repository {
       uri,
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer $accessToken"
+        'Authorization': 'Bearer ${prefs.getString('accessToken')}'
       },
     );
 
@@ -630,14 +917,23 @@ class RequestRepository implements Repository {
   }
 
   @override
-  Future<Education> getEducationById() async {
+  Future<Education> getEducationById(
+    BuildContext context,
+  ) async {
+    final bool tokenIsValid = await checkAndRefreshToken(context);
+
+    if (!tokenIsValid) {
+      // Token is not valid, handle accordingly (e.g., throw an exception, return an empty list)
+      print('Access token is not valid. Unable to fetch hiring requests.');
+      throw Exception('Access token is not valid.');
+    }
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? accessToken = prefs.getString('accessToken');
     int? devId = prefs.getInt('devId');
     final uri = Uri.parse("$apiServer/Education/$devId");
     final response = await http.get(
       uri, // Convert Uri to String
-      headers: {"Authorization": "Bearer $accessToken"},
+      headers: {'Authorization': 'Bearer ${prefs.getString('accessToken')}'},
     );
 
     if (response.statusCode == 200) {
@@ -655,14 +951,25 @@ class RequestRepository implements Repository {
   }
 
   @override
-  Future<ProfessionalExperience> getProfessionalExperienceById() async {
+  Future<ProfessionalExperience> getProfessionalExperienceById(
+    BuildContext context,
+  ) async {
+    final bool tokenIsValid = await checkAndRefreshToken(context);
+
+    if (!tokenIsValid) {
+      // Token is not valid, handle accordingly (e.g., throw an exception, return an empty list)
+      print('Access token is not valid. Unable to fetch hiring requests.');
+      throw Exception('Access token is not valid.');
+    }
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? accessToken = prefs.getString('accessToken');
     int? devId = prefs.getInt('devId');
     final uri = Uri.parse("$apiServer/ProfessionalExperience/$devId");
     final response = await http.get(
       uri, // Convert Uri to String
-      headers: {"Authorization": "Bearer $accessToken"},
+      headers: {
+        'Authorization': 'Bearer ${prefs.getString('accessToken')}',
+      },
     );
 
     if (response.statusCode == 200) {
@@ -681,12 +988,20 @@ class RequestRepository implements Repository {
 
   @override
   Future<bool> editEducation(
+      BuildContext context,
       int? educationId,
       String? majorName,
       String? schoolName,
       String? startDate,
       String? endDate,
       String? description) async {
+    final bool tokenIsValid = await checkAndRefreshToken(context);
+
+    if (!tokenIsValid) {
+      // Token is not valid, handle accordingly (e.g., throw an exception, return an empty list)
+      print('Access token is not valid. Unable to fetch hiring requests.');
+      return false;
+    }
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? accessToken = prefs.getString('accessToken');
     int? devId = prefs.getInt('devId');
@@ -706,7 +1021,7 @@ class RequestRepository implements Repository {
       body: json.encode(requestData),
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer $accessToken"
+        'Authorization': 'Bearer ${prefs.getString('accessToken')}',
       },
     );
 
@@ -718,12 +1033,20 @@ class RequestRepository implements Repository {
 
   @override
   Future<bool> editProfessionalExperience(
+      BuildContext context,
       int? professionalExperienceId,
       String? jobName,
       String? companyName,
       String? startDate,
       String? endDate,
       String? description) async {
+    final bool tokenIsValid = await checkAndRefreshToken(context);
+
+    if (!tokenIsValid) {
+      // Token is not valid, handle accordingly (e.g., throw an exception, return an empty list)
+      print('Access token is not valid. Unable to fetch hiring requests.');
+      return false;
+    }
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? accessToken = prefs.getString('accessToken');
     int? devId = prefs.getInt('devId');
@@ -744,7 +1067,7 @@ class RequestRepository implements Repository {
       body: json.encode(requestData),
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer $accessToken"
+        'Authorization': 'Bearer ${prefs.getString('accessToken')}',
       },
     );
 
@@ -755,7 +1078,14 @@ class RequestRepository implements Repository {
   }
 
   @override
-  Future<bool> deleteEducation(int? educationId) async {
+  Future<bool> deleteEducation(BuildContext context, int? educationId) async {
+    final bool tokenIsValid = await checkAndRefreshToken(context);
+
+    if (!tokenIsValid) {
+      // Token is not valid, handle accordingly (e.g., throw an exception, return an empty list)
+      print('Access token is not valid. Unable to fetch hiring requests.');
+      return false;
+    }
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? accessToken = prefs.getString('accessToken');
 
@@ -768,7 +1098,7 @@ class RequestRepository implements Repository {
       body: json.encode(requestData),
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer $accessToken"
+        'Authorization': 'Bearer ${prefs.getString('accessToken')}',
       },
     );
 
@@ -779,7 +1109,15 @@ class RequestRepository implements Repository {
   }
 
   @override
-  Future<bool> deleteProfesstionalExperience(int? professionalId) async {
+  Future<bool> deleteProfesstionalExperience(
+      BuildContext context, int? professionalId) async {
+    final bool tokenIsValid = await checkAndRefreshToken(context);
+
+    if (!tokenIsValid) {
+      // Token is not valid, handle accordingly (e.g., throw an exception, return an empty list)
+      print('Access token is not valid. Unable to fetch hiring requests.');
+      return false;
+    }
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? accessToken = prefs.getString('accessToken');
 
@@ -792,7 +1130,7 @@ class RequestRepository implements Repository {
       body: json.encode(requestData),
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer $accessToken"
+        'Authorization': 'Bearer ${prefs.getString('accessToken')}',
       },
     );
 
@@ -802,7 +1140,15 @@ class RequestRepository implements Repository {
     return false;
   }
 
-  Future<List<Project>> getProject(List<int> devStatusInProject) async {
+  Future<List<Project>> getProject(
+      BuildContext context, List<int> devStatusInProject) async {
+    final bool tokenIsValid = await checkAndRefreshToken(context);
+
+    if (!tokenIsValid) {
+      // Token is not valid, handle accordingly (e.g., throw an exception, return an empty list)
+      print('Access token is not valid. Unable to fetch hiring requests.');
+      return [];
+    }
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? accessToken = prefs.getString('accessToken');
     int? devId = prefs.getInt('devId');
@@ -815,7 +1161,9 @@ class RequestRepository implements Repository {
 
     final response = await http.get(
       uri,
-      headers: {"Authorization": "Bearer $accessToken"},
+      headers: {
+        'Authorization': 'Bearer ${prefs.getString('accessToken')}',
+      },
     );
 
     if (response.statusCode == 200) {
@@ -832,7 +1180,7 @@ class RequestRepository implements Repository {
 
   // @override
   // Future<List<Project>> getProject(String? devStatusInProject) async {
-  //   final bool tokenValid = await checkAndRefreshToken();
+  //   final bool tokenValid = await checkAndRefreshToken(context)
 
   //   if (!tokenValid) {
   //     // Token is not valid, handle accordingly (e.g., show login screen)
@@ -859,7 +1207,7 @@ class RequestRepository implements Repository {
   //         .toList()
   //         .cast<Project>();
   //   } else if (response.statusCode == 401) {
-  //     final bool tokenRefreshed = await checkAndRefreshToken();
+  //     final bool tokenRefreshed = await checkAndRefreshToken(context)
 
   //     if (tokenRefreshed) {
   //       return getProject(devStatusInProject);
@@ -898,13 +1246,22 @@ class RequestRepository implements Repository {
   // }
 
   @override
-  Future<Project> getProjectById(int? projectId) async {
+  Future<Project> getProjectById(BuildContext context, int? projectId) async {
+    final bool tokenIsValid = await checkAndRefreshToken(context);
+
+    if (!tokenIsValid) {
+      // Token is not valid, handle accordingly (e.g., throw an exception, return an empty list)
+      print('Access token is not valid. Unable to fetch hiring requests.');
+      throw Exception('Access token is not valid.');
+    }
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? accessToken = prefs.getString('accessToken');
     final uri = Uri.parse("$apiServer/Project/$projectId");
     final response = await http.get(
       uri,
-      headers: {"Authorization": "Bearer $accessToken"},
+      headers: {
+        'Authorization': 'Bearer ${prefs.getString('accessToken')}',
+      },
     );
 
     if (response.statusCode == 200) {
@@ -916,14 +1273,24 @@ class RequestRepository implements Repository {
   }
 
   @override
-  Future<List<Interview>> searchInterview(int? devId, String? title) async {
+  Future<List<Interview>> searchInterview(
+      BuildContext context, int? devId, String? title) async {
+    final bool tokenIsValid = await checkAndRefreshToken(context);
+
+    if (!tokenIsValid) {
+      // Token is not valid, handle accordingly (e.g., throw an exception, return an empty list)
+      print('Access token is not valid. Unable to fetch hiring requests.');
+      return [];
+    }
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? accessToken = prefs.getString('accessToken');
     devId = prefs.getInt('devId');
     final uri = Uri.parse("$apiServer/Interview/Dev/$devId?Title=$title");
     final response = await http.get(
       uri,
-      headers: {"Authorization": "Bearer $accessToken"},
+      headers: {
+        'Authorization': 'Bearer ${prefs.getString('accessToken')}',
+      },
     );
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -938,8 +1305,15 @@ class RequestRepository implements Repository {
   }
 
   @override
-  Future<List<Project>> searchProject(
-      int? devId, List<int> devStatusInProject, String? searchKeyString) async {
+  Future<List<Project>> searchProject(BuildContext context, int? devId,
+      List<int> devStatusInProject, String? searchKeyString) async {
+    final bool tokenIsValid = await checkAndRefreshToken(context);
+
+    if (!tokenIsValid) {
+      // Token is not valid, handle accordingly (e.g., throw an exception, return an empty list)
+      print('Access token is not valid. Unable to fetch hiring requests.');
+      return [];
+    }
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? accessToken = prefs.getString('accessToken');
     devId = prefs.getInt('devId');
@@ -952,7 +1326,9 @@ class RequestRepository implements Repository {
     ;
     final response = await http.get(
       uri,
-      headers: {"Authorization": "Bearer $accessToken"},
+      headers: {
+        'Authorization': 'Bearer ${prefs.getString('accessToken')}',
+      },
     );
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -967,7 +1343,15 @@ class RequestRepository implements Repository {
   }
 
   @override
-  Future<List<HiringNew>> searchHiring(String? searchKeyString) async {
+  Future<List<HiringNew>> searchHiring(
+      BuildContext context, String? searchKeyString) async {
+    final bool tokenIsValid = await checkAndRefreshToken(context);
+
+    if (!tokenIsValid) {
+      // Token is not valid, handle accordingly (e.g., throw an exception, return an empty list)
+      print('Access token is not valid. Unable to fetch hiring requests.');
+      return [];
+    }
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     int? devId = prefs.getInt('devId');
     final String? accessToken = prefs.getString('accessToken');
@@ -978,6 +1362,7 @@ class RequestRepository implements Repository {
         Uri.parse(getAreasUrl),
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${prefs.getString('accessToken')}'
         },
       );
       if (response.statusCode == 200) {
@@ -995,7 +1380,14 @@ class RequestRepository implements Repository {
   }
 
   @override
-  Future<bool> readNotification(int? notificationId) async {
+  Future<bool> readNotification(
+      BuildContext context, int? notificationId) async {
+    final bool tokenIsValid = await checkAndRefreshToken(context);
+
+    if (!tokenIsValid) {
+      print('Access token is not valid. Unable to fetch hiring requests.');
+      return false;
+    }
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? accessToken = prefs.getString('accessToken');
     int? userId = prefs.getInt('userId');
@@ -1006,7 +1398,7 @@ class RequestRepository implements Repository {
       uri,
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer $accessToken"
+        'Authorization': 'Bearer ${prefs.getString('accessToken')}'
       },
     );
 
@@ -1017,7 +1409,14 @@ class RequestRepository implements Repository {
   }
 
   @override
-  Future<bool> unNewNotification() async {
+  Future<bool> unNewNotification(BuildContext context) async {
+    final bool tokenIsValid = await checkAndRefreshToken(context);
+
+    if (!tokenIsValid) {
+      // Token is not valid, handle accordingly (e.g., throw an exception, return an empty list)
+      print('Access token is not valid. Unable to fetch hiring requests.');
+      return false;
+    }
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? accessToken = prefs.getString('accessToken');
     int? userId = prefs.getInt('userId');
@@ -1028,7 +1427,7 @@ class RequestRepository implements Repository {
       uri,
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer $accessToken"
+        'Authorization': 'Bearer ${prefs.getString('accessToken')}'
       },
     );
 
@@ -1063,15 +1462,15 @@ class RequestRepository implements Repository {
     }
   }
 
-  Future<bool> checkAndRefreshToken() async {
+  Future<bool> checkAndRefreshToken(BuildContext context) async {
     try {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       final String? accessToken = prefs.getString('accessToken');
       final String? accessTokenExp = prefs.getString('accessTokenExp');
 
       if (accessToken != null && accessTokenExp != null) {
-        final DateTime accessTokenExpDate = DateTime.parse(accessTokenExp);
-
+        final DateTime accessTokenExpDate =
+            DateTime.parse(accessTokenExp).add(const Duration(hours: 7));
         if (DateTime.now().isAfter(accessTokenExpDate)) {
           // Access token has expired, refresh it
           await refreshToken();
@@ -1079,6 +1478,7 @@ class RequestRepository implements Repository {
           // Refresh successful, update access token expiration time
           final String? updatedAccessTokenExp =
               prefs.getString('refreshTokenExp');
+
           if (updatedAccessTokenExp != null) {
             final DateTime updatedExpDate =
                 DateTime.parse(updatedAccessTokenExp);
@@ -1087,28 +1487,27 @@ class RequestRepository implements Repository {
               return true;
             } else {
               // Refreshed token has already expired, perform logout
-              await logout();
+              await logout(context);
               return false;
             }
           } else {
             // Failed to get updated access token expiration time, perform logout
-            await logout();
+            await logout(context);
             return false;
           }
         }
       }
 
-      // Access token is still valid
+      // Access token is valid
       return true;
     } catch (e) {
-      // Handle refresh token failure, perform logout
       print('Failed to refresh token: $e');
-      await logout();
+      await logout(context);
       return false;
     }
   }
 
-  Future<void> logout() async {
+  Future<void> logout(BuildContext context) async {
     // Perform logout actions, such as clearing stored tokens and user information
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove('accessToken');
@@ -1119,10 +1518,25 @@ class RequestRepository implements Repository {
     prefs.remove('refreshToken');
     prefs.remove('deviceToken');
     // Additional logout actions, if any
+
+    // Navigate to the TestLoginScreen
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) => const TestLoginScreen(),
+      ),
+    );
   }
 
   @override
-  Future<List<PaySlip>> getPaySlipByProjectId(int? projectId) async {
+  Future<List<PaySlip>> getPaySlipByProjectId(
+      BuildContext context, int? projectId) async {
+    final bool tokenIsValid = await checkAndRefreshToken(context);
+
+    if (!tokenIsValid) {
+      // Token is not valid, handle accordingly (e.g., throw an exception, return an empty list)
+      print('Access token is not valid. Unable to fetch hiring requests.');
+      return [];
+    }
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? accessToken = prefs.getString('accessToken');
     int? devId = prefs.getInt('devId');
@@ -1130,7 +1544,7 @@ class RequestRepository implements Repository {
         "$apiServer/PaySlip/ByDeveloper?projectId=$projectId&developerId=$devId");
     final response = await http.get(
       uri,
-      headers: {"Authorization": "Bearer $accessToken"},
+      headers: {'Authorization': 'Bearer ${prefs.getString('accessToken')}'},
     );
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -1145,13 +1559,21 @@ class RequestRepository implements Repository {
   }
 
   @override
-  Future<List<WorkLog>> getWorkLogByPaySlipId(int? paySlipId) async {
+  Future<List<WorkLog>> getWorkLogByPaySlipId(
+      BuildContext context, int? paySlipId) async {
+    final bool tokenIsValid = await checkAndRefreshToken(context);
+
+    if (!tokenIsValid) {
+      // Token is not valid, handle accordingly (e.g., throw an exception, return an empty list)
+      print('Access token is not valid. Unable to fetch hiring requests.');
+      return [];
+    }
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? accessToken = prefs.getString('accessToken');
     final uri = Uri.parse("$apiServer/WorkLog/ByPaySlip/$paySlipId");
     final response = await http.get(
       uri,
-      headers: {"Authorization": "Bearer $accessToken"},
+      headers: {'Authorization': 'Bearer ${prefs.getString('accessToken')}'},
     );
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -1163,5 +1585,17 @@ class RequestRepository implements Repository {
     }
 
     return [];
+  }
+
+  @override
+  Future<NotificationDev> getNotificationText(
+      BuildContext context,
+      String deviceToken,
+      String title,
+      String content,
+      String notificationType,
+      int routeId) {
+    // TODO: implement getNotificationText
+    throw UnimplementedError();
   }
 }

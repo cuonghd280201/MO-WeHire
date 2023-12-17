@@ -38,7 +38,7 @@ class _ListInterviewDevReceiveState extends State<ListInterviewDevReceive>
   }
 
   Future<void> _refreshData() async {
-    await hiringController.fetchInterviewList(null);
+    await hiringController.fetchInterviewList(context, null);
     setState(() {
       displayCategories = List.from(categories);
     });
@@ -47,6 +47,7 @@ class _ListInterviewDevReceiveState extends State<ListInterviewDevReceive>
   Future<void> _searchInterviews() async {
     List<Interview> searchedInterviews =
         await hiringController.searchInterviewList(
+      context,
       null,
       searchQuery,
     );
@@ -148,7 +149,7 @@ class _ListInterviewDevReceiveState extends State<ListInterviewDevReceive>
 
   Widget buildStaticYardList(String category) {
     return FutureBuilder<List<Interview>>(
-      future: hiringController.fetchInterviewList(null),
+      future: hiringController.fetchInterviewList(context, null),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
