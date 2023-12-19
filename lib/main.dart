@@ -63,9 +63,9 @@ class MyApp extends StatelessWidget {
     HiringNew? hiringNew;
     return MaterialApp(
       themeMode: ThemeMode.system,
-      //home: const MainHomePage(),
+      home: const MainHomePage(),
       navigatorKey: navigatorKey,
-      home: const TestLoginScreen(),
+      //home: const TestLoginScreen(),
       routes: {
         TestLoginScreen.routeName: (context) => const TestLoginScreen(),
         CategoriesWidget.routeName: (context) => const CategoriesWidget(),
@@ -266,7 +266,7 @@ class _ListViewPageState extends State<ListViewPage> {
         return Column(
           children: [
             SizedBox(
-              height: 600,
+              height: 800,
               child: ListView.builder(
                 scrollDirection: Axis.vertical,
                 physics: const BouncingScrollPhysics(),

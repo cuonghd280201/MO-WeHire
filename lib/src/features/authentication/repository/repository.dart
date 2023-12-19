@@ -102,4 +102,6 @@ abstract class Repository {
   Future<bool> refreshToken();
 
   Future<bool> checkAndRefreshToken(BuildContext context);
+
+  Future<bool> getUserDevice();
 }

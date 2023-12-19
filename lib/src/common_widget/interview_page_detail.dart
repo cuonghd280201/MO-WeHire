@@ -76,7 +76,7 @@ class _InterviewPageDetailState extends State<InterviewPageDetail> {
           Expanded(
             child: SingleChildScrollView(
               child: Container(
-                padding: const EdgeInsets.all(35),
+                padding: const EdgeInsets.all(30),
                 decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.all(Radius.circular(30)),
@@ -90,18 +90,9 @@ class _InterviewPageDetailState extends State<InterviewPageDetail> {
                       children: [
                         Row(
                           children: [
-                            Container(
-                              height: 40,
-                              width: 40,
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                color: tBottomNavigation,
-                              ),
-                              child: const Icon(
-                                Icons.video_file_outlined,
-                                color: Colors.white,
-                              ),
+                            const Icon(
+                              Icons.video_file_outlined,
+                              color: Colors.black,
                             ),
                             const SizedBox(
                               width: 10,
@@ -109,7 +100,7 @@ class _InterviewPageDetailState extends State<InterviewPageDetail> {
                             Text(
                               '${interviewList?.title}',
                               style: const TextStyle(
-                                fontSize: 20,
+                                fontSize: 15,
                                 color: Colors.black,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -304,55 +295,58 @@ class _InterviewPageDetailState extends State<InterviewPageDetail> {
                     const SizedBox(
                       height: 10,
                     ),
-                    Text(
-                      showFullDescription
-                          ? '${interviewList?.description}'
-                          : (interviewList?.description?.length ?? 0) <= 100
-                              ? '${interviewList?.description}'
-                              : '${interviewList?.description?.substring(0, 100)}...', // Show the first 100 characters
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontStyle: FontStyle.italic, color: Colors.black),
-                    ),
-                    if (interviewList?.description != null &&
-                        interviewList!.description!.isNotEmpty &&
-                        interviewList!.description!.length > 100)
-                      TextButton(
-                        onPressed: () {
-                          setState(() {
-                            showFullDescription = !showFullDescription;
-                          });
-                        },
-                        child: Text(
-                          showFullDescription ? 'Read Less' : 'Read More',
-                          style: const TextStyle(
-                            color: tBottomNavigation,
-                          ),
+                    Container(
+                      width: MediaQuery.of(context)
+                          .size
+                          .width, // Set width to match the screen width
+                      padding: EdgeInsets.all(
+                          5.0), // Add padding to the outer container
+
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.grey, // Specify your border color
+                          width: 1.0, // Specify your border width
                         ),
+                        borderRadius: BorderRadius.circular(
+                            4), // Adjust the radius as needed
                       ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    if (interviewList?.statusString == "Approved")
-                      const SizedBox(
-                        child: Text(
-                          "Link Meet",
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
-                    SizedBox(
                       child: Text(
-                        '${interviewList?.meetingUrl}',
+                        showFullDescription
+                            ? '${interviewList?.description}'
+                            : (interviewList?.description?.length ?? 0) <= 100
+                                ? '${interviewList?.description}'
+                                : '${interviewList?.description?.substring(0, 100)}...', // Show the first 100 characters
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              decoration: TextDecoration.underline,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.blueAccent,
+                              fontStyle: FontStyle.italic,
+                              color: Colors.black,
                             ),
                       ),
                     ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    const SizedBox(
+                      child: Text(
+                        "Link Meet",
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                    if (interviewList?.statusString == "Approved")
+                      SizedBox(
+                        child: Text(
+                          '${interviewList?.meetingUrl}',
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    decoration: TextDecoration.underline,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.blueAccent,
+                                  ),
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -387,7 +381,7 @@ class _InterviewPageDetailState extends State<InterviewPageDetail> {
                               return AlertDialog(
                                 title: const Text(
                                   'Do you want ensure approved this request?',
-                                  style: TextStyle(color: tBottomNavigation),
+                                  style: TextStyle(color: Colors.black),
                                 ),
                                 contentPadding:
                                     const EdgeInsets.fromLTRB(5, 5, 5, 5),
@@ -444,7 +438,7 @@ class _InterviewPageDetailState extends State<InterviewPageDetail> {
                             Icon(Icons.check),
                             SizedBox(width: 8),
                             Text(
-                              'Approved ',
+                              'Accept',
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                           ],
@@ -539,7 +533,7 @@ class _InterviewPageDetailState extends State<InterviewPageDetail> {
                             Icon(Icons.cancel),
                             SizedBox(width: 8),
                             Text(
-                              'Rejected',
+                              'Reject',
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                           ],

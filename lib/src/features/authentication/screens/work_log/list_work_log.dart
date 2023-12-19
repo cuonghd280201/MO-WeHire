@@ -72,7 +72,9 @@ class _ListWorkLogDevState extends State<ListWorkLogDev> {
           return Column(
             children: [
               SizedBox(
-                height: 600,
+                height: MediaQuery.of(context)
+                    .size
+                    .height, // Lấy chiều cao của màn hình
                 child: ListView.builder(
                   scrollDirection: Axis.vertical,
                   physics: const BouncingScrollPhysics(),

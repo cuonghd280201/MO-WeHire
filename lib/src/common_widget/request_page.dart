@@ -352,18 +352,34 @@ class _YardDetailState extends State<RequestPageDetail> {
                     const SizedBox(
                       height: 10,
                     ),
-                    Html(
-                      data: showFullDescription
-                          ? '${htmlUnescape.convert(hiringNew?.jobDescription ?? '')}'
-                          : (hiringNew?.jobDescription?.length ?? 0) <= 100
-                              ? '${htmlUnescape.convert(hiringNew?.jobDescription ?? '')}'
-                              : '${htmlUnescape.convert(hiringNew?.jobDescription?.substring(0, 100) ?? '')}...', // Show the first 100 characters
-                      style: {
-                        'body': Style(
-                          fontSize: FontSize
-                              .medium, // or FontSize.small, FontSize.large, etc.
+                    Container(
+                      width: MediaQuery.of(context)
+                          .size
+                          .width, // Set width to match the screen width
+                      padding: EdgeInsets.all(
+                          5.0), // Add padding to the outer container
+
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.grey, // Specify your border color
+                          width: 1.0, // Specify your border width
                         ),
-                      },
+                        borderRadius: BorderRadius.circular(
+                            4), // Adjust the radius as needed
+                      ),
+                      child: Html(
+                        data: showFullDescription
+                            ? '${htmlUnescape.convert(hiringNew?.jobDescription ?? '')}'
+                            : (hiringNew?.jobDescription?.length ?? 0) <= 100
+                                ? '${htmlUnescape.convert(hiringNew?.jobDescription ?? '')}'
+                                : '${htmlUnescape.convert(hiringNew?.jobDescription?.substring(0, 100) ?? '')}...', // Show the first 100 characters
+                        style: {
+                          'body': Style(
+                            fontSize: FontSize
+                                .medium, // or FontSize.small, FontSize.large, etc.
+                          ),
+                        },
+                      ),
                     ),
                     if (hiringNew?.jobDescription != null &&
                         hiringNew!.jobDescription!.isNotEmpty &&

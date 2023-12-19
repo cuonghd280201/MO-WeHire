@@ -381,18 +381,28 @@ class _ProjectPageDetailState extends State<ProjectPageDetail> {
                         color: tBottomNavigation,
                       ),
                     ),
-                    Html(
-                      data: _showFullDescription
-                          ? '${_htmlUnescape.convert(projectNew?.description ?? '')}'
-                          : (projectNew?.description?.length ?? 0) <= 50
-                              ? '${_htmlUnescape.convert(projectNew?.description ?? '')}'
-                              : '${_htmlUnescape.convert(projectNew?.description?.substring(0, 50) ?? '')}...', // Show the first 50 characters
-                      style: {
-                        'body': Style(
-                          fontSize: FontSize
-                              .medium, // or FontSize.small, FontSize.large, etc.
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      padding: EdgeInsets.all(5.0),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.grey,
                         ),
-                      },
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Html(
+                        data: _showFullDescription
+                            ? '${_htmlUnescape.convert(projectNew?.description ?? '')}'
+                            : (projectNew?.description?.length ?? 0) <= 50
+                                ? '${_htmlUnescape.convert(projectNew?.description ?? '')}'
+                                : '${_htmlUnescape.convert(projectNew?.description?.substring(0, 50) ?? '')}...', // Show the first 50 characters
+                        style: {
+                          'body': Style(
+                            fontSize: FontSize
+                                .medium, // or FontSize.small, FontSize.large, etc.
+                          ),
+                        },
+                      ),
                     ),
                     if (projectNew?.description != null &&
                         projectNew!.description!.isNotEmpty &&
@@ -461,7 +471,7 @@ class _ProjectPageDetailState extends State<ProjectPageDetail> {
         return Column(
           children: [
             SizedBox(
-              height: 500,
+              height: 800,
               child: ListView.builder(
                 scrollDirection: Axis.vertical,
                 physics: const BouncingScrollPhysics(),

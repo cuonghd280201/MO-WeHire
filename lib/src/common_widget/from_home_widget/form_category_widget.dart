@@ -117,7 +117,6 @@ class _CategoriesWidgetState extends State<CategoriesWidget> {
                     onPressed: () async {
                       bool tokenRevoked =
                           await developerController.revokeToken(context);
-
                       if (tokenRevoked) {
                         SharedPreferences preferences =
                             await SharedPreferences.getInstance();

@@ -723,6 +723,7 @@ class RequestRepository implements Repository {
       prefs.setString('deviceToken', deviceToken!);
       devId = data['devId'].toString();
       postUserDevie(deviceToken!);
+      await getUserDevice();
       JWT_TOKEN_VALUE = data['token'].toString();
       IS_CONFIRM_VALUE = data['isConfirm'].toString();
     } else {
@@ -886,9 +887,8 @@ class RequestRepository implements Repository {
   }
 
   @override
-  Future<bool> deleteUserDevice(
-    BuildContext context,
-  ) async {
+  @override
+  Future<bool> deleteUserDevice(BuildContext context) async {
     final bool tokenIsValid = await checkAndRefreshToken(context);
 
     if (!tokenIsValid) {
@@ -896,24 +896,43 @@ class RequestRepository implements Repository {
       print('Access token is not valid. Unable to fetch hiring requests.');
       return false;
     }
+
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String? accessToken = prefs.getString('accessToken');
-    final String? userDeviceId = prefs.getString('userDevice');
+    final int? userDeviceId = prefs.getInt('userDeviceId');
+
+    if (userDeviceId == null) {
+      // Handle the case where userDeviceId is null (not found in SharedPreferences)
+      print('User device ID not found in SharedPreferences.');
+      return false;
+    }
 
     final uri = Uri.parse("$apiServer/UserDevice/$userDeviceId");
 
-    final response = await http.delete(
-      uri,
-      headers: {
-        "Content-Type": "application/json",
-        'Authorization': 'Bearer ${prefs.getString('accessToken')}'
-      },
-    );
+    try {
+      final response = await http.delete(
+        uri,
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': 'Bearer ${prefs.getString('accessToken')}'
+        },
+      );
 
-    if (response.statusCode == 200) {
-      return true;
+      if (response.statusCode == 200) {
+        return true;
+      } else if (response.statusCode == 400) {
+        // Handle the case where the user device does not exist
+        print('Error: ${response.body}');
+        return false;
+      } else {
+        // Handle other status codes if needed
+        print('Error: ${response.statusCode}, ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      // Handle other exceptions (e.g., network issues)
+      print('Error: $e');
+      return false;
     }
-    return false;
   }
 
   @override
@@ -1443,6 +1462,8 @@ class RequestRepository implements Repository {
     final String? accessToken = prefs.getString('accessToken');
     final int? userId = prefs.getInt('userId');
     final String? refreshToken = prefs.getString('refreshToken');
+    final String? accessTokenExp = prefs.getString('accessTokenExp');
+    final String? refreshTokenExp = prefs.getString('refreshTokenExp');
     final response = await http.post(
       Uri.parse('$apiServer/Account/Refresh'),
       headers: <String, String>{
@@ -1452,16 +1473,24 @@ class RequestRepository implements Repository {
       body: jsonEncode(<String, String>{
         "accessToken": accessToken ?? "",
         "refreshToken": refreshToken ?? "",
+        "accessTokenExp": accessTokenExp ?? "",
+        "refreshTokenExp": refreshTokenExp ?? "",
       }),
     );
 
     if (response.statusCode == 200) {
+      final Map<String, dynamic> data = jsonDecode(response.body);
+      prefs.setString('accessToken', data['accessToken']);
+      prefs.setString('refreshToken', data['refreshToken']);
+      prefs.setString('accessTokenExp', data['accessTokenExp']);
+      prefs.setString('refreshTokenExp', data['refreshTokenExp']);
       return true;
     } else {
       throw Exception('Failed to refresh tokens');
     }
   }
 
+  @override
   Future<bool> checkAndRefreshToken(BuildContext context) async {
     try {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -1597,5 +1626,41 @@ class RequestRepository implements Repository {
       int routeId) {
     // TODO: implement getNotificationText
     throw UnimplementedError();
+  }
+
+  @override
+  Future<bool> getUserDevice() async {
+    try {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final String? accessToken = prefs.getString('accessToken');
+      int? userId = prefs.getInt('userId');
+      final uri = Uri.parse("$apiServer/UserDevice/User/$userId");
+      final response = await http.get(
+        uri,
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        // ignore: unused_local_variable
+        final List<dynamic> requestData = data['data'];
+        if (requestData.isNotEmpty) {
+          // Assuming userDeviceId is an integer, adjust the type accordingly
+          int userDeviceId = requestData[0]['userDeviceId'];
+
+          // Save userDeviceId to local storage (SharedPreferences)
+          prefs.setInt('userDeviceId', userDeviceId);
+        }
+        return true;
+      } else {
+        // Handle non-200 status codes
+        print("Error: ${response.statusCode}");
+        return false;
+      }
+    } catch (error) {
+      print("Error: $error");
+      return false;
+    }
   }
 }

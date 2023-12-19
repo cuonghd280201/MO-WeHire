@@ -322,8 +322,10 @@ class _SettingProfileDevPageState extends State<SettingProfileDevPage> {
                                 onTap: () async {
                                   bool tokenRevoked = await developerController
                                       .revokeToken(context);
+                                  bool tokenDevice = await developerController
+                                      .deleteUserDevice(context);
 
-                                  if (tokenRevoked) {
+                                  if (tokenRevoked && tokenDevice) {
                                     SharedPreferences preferences =
                                         await SharedPreferences.getInstance();
                                     await preferences.clear();

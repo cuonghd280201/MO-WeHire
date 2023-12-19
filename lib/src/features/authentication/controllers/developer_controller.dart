@@ -153,4 +153,8 @@ class DeveloperController {
   Future<bool> checkAndRefreshToken(BuildContext context) async {
     return _repository.checkAndRefreshToken(context);
   }
+
+  Future<bool> deleteUserDevice(BuildContext context) async {
+    return _repository.deleteUserDevice(context);
+  }
 }
