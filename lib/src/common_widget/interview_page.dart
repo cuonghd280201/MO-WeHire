@@ -159,13 +159,13 @@ class _InterviewPageState extends State<InterviewPageCard>
                           ),
                         ],
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 12),
                       Row(
                         children: [
                           SizedBox(
                             width: cardWidth / 3,
                             child: const Text(
-                              "Date Of Interview",
+                              "Date Of Interview: ",
                               style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.bold,

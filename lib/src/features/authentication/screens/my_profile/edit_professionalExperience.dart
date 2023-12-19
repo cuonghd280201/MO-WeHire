@@ -55,8 +55,11 @@ class _EditProfessionalPageState extends State<EditProfessionalPage> {
           icon: const Icon(Icons.arrow_back_ios_new_outlined),
           color: Colors.white,
           onPressed: () {
-            Navigator.pushReplacementNamed(
-                context, ListProfessionalPage.routeName);
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const ListProfessionalPage(),
+              ),
+            );
           },
         ),
       ),

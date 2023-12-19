@@ -225,8 +225,8 @@ class _CategoriesWidgetState extends State<CategoriesWidget> {
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   childAspectRatio:
-                      (MediaQuery.of(context).size.height - 50 - 25) /
-                          (4 * 150),
+                      (MediaQuery.of(context).size.height - 70 - 25) /
+                          (4 * 200),
                   mainAxisSpacing: 12,
                   crossAxisSpacing: 12,
                 ),

@@ -266,7 +266,7 @@ class _ListViewPageState extends State<ListViewPage> {
         return Column(
           children: [
             SizedBox(
-              height: 800,
+              height: 1000,
               child: ListView.builder(
                 scrollDirection: Axis.vertical,
                 physics: const BouncingScrollPhysics(),

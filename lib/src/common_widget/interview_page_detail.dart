@@ -90,59 +90,59 @@ class _InterviewPageDetailState extends State<InterviewPageDetail> {
                       children: [
                         Row(
                           children: [
-                            const Icon(
-                              Icons.video_file_outlined,
-                              color: Colors.black,
+                            Container(
+                              child: Icon(
+                                Icons.video_file_outlined,
+                                color: Colors.black,
+                              ),
                             ),
                             const SizedBox(
                               width: 10,
                             ),
-                            Text(
-                              '${interviewList?.title}',
-                              style: const TextStyle(
-                                fontSize: 15,
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            )
-                          ],
-                        ),
-                        Row(
-                          children: [
                             Container(
-                              decoration: BoxDecoration(
-                                color: () {
-                                  switch (interviewList?.statusString) {
-                                    case 'Approved':
-                                      return tBottomNavigation;
-                                    case 'Waiting Approval':
-                                      return Colors.orangeAccent;
-                                    case 'Completed':
-                                      return Colors.blueAccent;
-                                    case 'Cancelled':
-                                      return Colors.black;
-                                    default:
-                                      return Colors.grey;
-                                  }
-                                }(),
-                                borderRadius: BorderRadius.circular(
-                                    20), // Optional: Set border radius
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(
-                                    10.0), // Adjust the padding as needed
-                                child: Text(
-                                  '${interviewList?.statusString}',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyMedium
-                                      ?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white),
+                              child: Text(
+                                '${interviewList?.title}',
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
-                            )
+                            ),
                           ],
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: () {
+                              switch (interviewList?.statusString) {
+                                case 'Approved':
+                                  return tBottomNavigation;
+                                case 'Waiting Approval':
+                                  return Colors.orangeAccent;
+                                case 'Completed':
+                                  return Colors.blueAccent;
+                                case 'Cancelled':
+                                  return Colors.black;
+                                default:
+                                  return Colors.grey;
+                              }
+                            }(),
+                            borderRadius: BorderRadius.circular(
+                                20), // Optional: Set border radius
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(
+                                10.0), // Adjust the padding as needed
+                            child: Text(
+                              '${interviewList?.statusString}',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white),
+                            ),
+                          ),
                         )
                       ],
                     ),
@@ -335,6 +335,9 @@ class _InterviewPageDetailState extends State<InterviewPageDetail> {
                         ),
                       ),
                     ),
+                    const SizedBox(
+                      height: 10,
+                    ),
                     if (interviewList?.statusString == "Approved")
                       SizedBox(
                         child: Text(
@@ -419,7 +422,6 @@ class _InterviewPageDetailState extends State<InterviewPageDetail> {
                                         });
 
                                         Navigator.of(context).pop();
-                                        // ignore: use_build_context_synchronously
                                         MotionToast.success(
                                           description: const Text(
                                               "Successful interview approval"),
